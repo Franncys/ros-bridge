@@ -12,12 +12,16 @@ Classes to handle Carla lidars
 """
 
 import numpy
+import json
+from datetime import datetime
+import logging
 
 from carla_ros_bridge.sensor import Sensor, create_cloud
 
 from sensor_msgs.msg import PointCloud2, PointField
 from rclpy import qos
 
+logger = logging.getLogger(__name__)
 
 class Lidar(Sensor):
 
@@ -101,6 +105,25 @@ class Lidar(Sensor):
         point_cloud_msg = create_cloud(header, fields, lidar_data)
         self.lidar_publisher.publish(point_cloud_msg)
 
+        # Log the LiDAR data
+        self.log_sensor_data(carla_lidar_measurement)
+
+    def log_sensor_data(self, carla_lidar_measurement):
+        """
+        Log LiDAR-specific data.
+
+        :param carla_lidar_measurement: carla lidar measurement object
+        :type carla_lidar_measurement: carla.LidarMeasurement
+        """
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "sensor_type": "Lidar",
+            "sensor_id": self.uid,
+            "frame_id": carla_lidar_measurement.frame,
+            "point_count": len(carla_lidar_measurement.raw_data) // 16,  # Assuming 16 bytes per point
+        }
+        logger.info(json.dumps(log_entry))
+
 
 class SemanticLidar(Sensor):
 
@@ -178,3 +201,22 @@ class SemanticLidar(Sensor):
         lidar_data['y'] *= -1
         point_cloud_msg = create_cloud(header, fields, lidar_data.tolist())
         self.semantic_lidar_publisher.publish(point_cloud_msg)
+
+        # Log the Semantic LiDAR data
+        self.log_sensor_data(carla_lidar_measurement)
+
+    def log_sensor_data(self, carla_lidar_measurement):
+        """
+        Log Semantic LiDAR-specific data.
+
+        :param carla_lidar_measurement: carla semantic lidar measurement object
+        :type carla_lidar_measurement: carla.SemanticLidarMeasurement
+        """
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "sensor_type": "SemanticLidar",
+            "sensor_id": self.uid,
+            "frame_id": carla_lidar_measurement.frame,
+            "object_count": len(carla_lidar_measurement.raw_data) // 24,  # Assuming 24 bytes per point
+        }
+        logger.info(json.dumps(log_entry))

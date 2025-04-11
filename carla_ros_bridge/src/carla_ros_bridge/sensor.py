@@ -42,6 +42,23 @@ _DATATYPES[PointField.UINT32] = ('I', 4)
 _DATATYPES[PointField.FLOAT32] = ('f', 4)
 _DATATYPES[PointField.FLOAT64] = ('d', 8)
 
+import logging
+import json
+from datetime import datetime
+
+# Generate a unique log file name based on the current timestamp
+log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+# Configure the logger
+logger = logging.getLogger("SensorLogger")
+logger.setLevel(logging.INFO)
+
+# Create a file handler to write logs to a timestamped file
+file_handler = logging.FileHandler(log_file_name)
+file_handler.setLevel(logging.INFO)
+
+# Add the file handler to the logger
+logger.addHandler(file_handler)
 
 class Sensor(Actor):
 
@@ -187,7 +204,39 @@ class Sensor(Actor):
                 if roscomp.ok():
                     self.node.logwarn(
                         "Sensor {}: Error while executing sensor_data_updated().".format(self.uid))
+        
+        self.log_sensor_data(carla_sensor_data)  # Log the sensor data
+
         self._callback_active.release()
+
+
+    def log_sensor_data(self, carla_sensor_data):
+        """
+        Default logging function for sensor data.
+        Can be overridden by subclasses for custom logging.
+
+        :param carla_sensor_data: carla sensor data object
+        :type carla_sensor_data: carla.SensorData
+        """
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "sensor_type": self.__class__.__name__,
+            "sensor_id": self.uid,
+            "frame_id": carla_sensor_data.frame,
+            "data": self._extract_sensor_data(carla_sensor_data)
+        }
+        logger.info(json.dumps(log_entry))
+
+    def _extract_sensor_data(self, carla_sensor_data):
+        """
+        Extract relevant data from the carla sensor data object.
+        Subclasses can override this for custom extraction logic.
+
+        :param carla_sensor_data: carla sensor data object
+        :type carla_sensor_data: carla.SensorData
+        :return: A dictionary containing the extracted data.
+        """
+        return {"raw_data": str(carla_sensor_data)}
 
     @abstractmethod
     def sensor_data_updated(self, carla_sensor_data):
