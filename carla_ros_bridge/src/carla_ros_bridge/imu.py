@@ -13,8 +13,10 @@ import carla_common.transforms as trans
 
 from carla_ros_bridge.sensor import Sensor
 
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import Imu
 
+from carla_ros_bridge.FaultInjector.IMUFaultInjector import IMUFaultInjector
 
 class ImuSensor(Sensor):
 
@@ -22,7 +24,7 @@ class ImuSensor(Sensor):
     Actor implementation details for imu sensor
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id, fault_config_file=None):
         """
         Constructor
 
@@ -49,6 +51,12 @@ class ImuSensor(Sensor):
                                         carla_actor=carla_actor,
                                         synchronous_mode=synchronous_mode)
 
+        # Initialize the IMUFaultInjector only if faults exist for this sensor
+        if fault_config_file and has_fault_for_sensor(fault_config_file, "IMUSensor"):
+            self.fault_injector = IMUFaultInjector(fault_config_file)
+        else:
+            self.fault_injector = None
+            
         self.imu_publisher = node.new_publisher(Imu, self.get_topic_prefix(), qos_profile=10)
         self.listen()
 
@@ -86,5 +94,9 @@ class ImuSensor(Sensor):
         imu_msg.orientation.x = quat[1]
         imu_msg.orientation.y = quat[2]
         imu_msg.orientation.z = quat[3]
+
+        # Apply fault injection
+        if self.fault_injector:
+            imu_msg = self.fault_injector.apply_faults(imu_msg)
 
         self.imu_publisher.publish(imu_msg)

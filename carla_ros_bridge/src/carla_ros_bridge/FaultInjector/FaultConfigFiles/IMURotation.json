@@ -1,0 +1,22 @@
+[
+    {
+        "sensor": "IMUSensor",
+        "faults": [
+            {
+                "name": "rotation",
+                "trigger": {
+                    "location": {
+                        "latitude": 70.7,
+                        "longitude": 66.4,
+                        "altitude": 0.0
+                    }
+                },
+                "parameters": {
+                    "axis": "z",
+                    "angle": 180
+                },
+                "duration": 10
+            }
+        ]
+    }
+]

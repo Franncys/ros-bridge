@@ -17,7 +17,10 @@ from abc import abstractmethod
 import carla
 import numpy
 import transforms3d
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from cv_bridge import CvBridge
+
+from carla_ros_bridge.FaultInjector.RGBCameraFaultInjector import RGBCameraFaultInjector
 
 import carla_common.transforms as trans
 from ros_compatibility.core import get_ros_version
@@ -189,7 +192,7 @@ class RgbCamera(Camera):
     Camera implementation details for rgb camera
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id=None):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id=None, fault_config_file=None):
         """
         Constructor
 
@@ -216,9 +219,39 @@ class RgbCamera(Camera):
                                         carla_actor=carla_actor,
                                         synchronous_mode=synchronous_mode,
                                         frame_id=frame_id)
-
+        
+        # Initialize the RGBCameraFaultInjector only if faults exist for this sensor
+        if fault_config_file and has_fault_for_sensor(fault_config_file, "RGBCamera"):
+            self.fault_injector = RGBCameraFaultInjector(fault_config_file)
+        else:
+            self.fault_injector = None
+            
         self._frame_id = frame_id
         self.listen()
+
+    # pylint: disable=arguments-differ
+    def sensor_data_updated(self, carla_camera_data):
+        """
+        Override the base method to add RGB camera-specific logic.
+
+        :param carla_camera_data: carla camera data object
+        :type carla_camera_data: carla.Image
+        """
+        # Convert CARLA camera data to ROS image message
+        img_msg = self.get_ros_image(carla_camera_data)
+
+        # Apply fault injection if enabled
+        if self.fault_injector:
+            img_msg = self.fault_injector.apply_faults(img_msg)
+
+        # Publish camera info and image
+        cam_info = self._camera_info
+        cam_info.header = img_msg.header
+        self.camera_info_publisher.publish(cam_info)
+        self.camera_image_publisher.publish(img_msg)
+
+        # Log the processed data (optional)
+        self.node.loginfo(f"Published RGB image from {self.name} (UID: {self.uid})")
         
 
     def get_carla_image_data_array(self, carla_image):

@@ -14,6 +14,12 @@ def generate_launch_description():
             default_value='2000',
             description='TCP port of the CARLA server'
         ),
+        # Declare the fault configuration file argument
+        launch.actions.DeclareLaunchArgument(
+            name='fault_config_file',
+            default_value='',
+            description='Path to the fault configuration file'
+        ),
         launch.actions.DeclareLaunchArgument(
             name='timeout',
             default_value='2',
@@ -71,6 +77,9 @@ def generate_launch_description():
                 },
                 {
                     'port': launch.substitutions.LaunchConfiguration('port')
+                },
+                {
+                    'fault_config_file': launch.substitutions.LaunchConfiguration('fault_config_file')
                 },
                 {
                     'timeout': launch.substitutions.LaunchConfiguration('timeout')

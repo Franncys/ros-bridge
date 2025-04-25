@@ -18,6 +18,8 @@ import logging
 
 from carla_ros_bridge.sensor import Sensor, create_cloud
 
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.LidarFaultInjector import LidarFaultInjector
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import PointCloud2, PointField
 from rclpy import qos
 
@@ -29,7 +31,7 @@ class Lidar(Sensor):
     Actor implementation details for lidars
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id, fault_config_file=None):
         """
         Constructor
 
@@ -55,6 +57,12 @@ class Lidar(Sensor):
                                     node=node,
                                     carla_actor=carla_actor,
                                     synchronous_mode=synchronous_mode)
+        
+        # Initialize the LidarFaultInjector only if faults exist for this sensor
+        if fault_config_file and has_fault_for_sensor(fault_config_file, "LidarSensor"):
+            self.fault_injector = LidarFaultInjector(fault_config_file)
+        else:
+            self.fault_injector = None
 
         self.lidar_publisher = node.new_publisher(PointCloud2,
                                                   self.get_topic_prefix(),
@@ -99,6 +107,10 @@ class Lidar(Sensor):
         
         lidar_data = numpy.hstack((lidar_data, ring))
         
+        # Apply fault injection if enabled
+        if self.fault_injector:
+            lidar_data = self.fault_injector.apply_faults({"points": lidar_data})["points"]
+
         # we take the opposite of y axis
         # (as lidar point are express in left handed coordinate system, and ros need right handed)
         lidar_data[:, 1] *= -1

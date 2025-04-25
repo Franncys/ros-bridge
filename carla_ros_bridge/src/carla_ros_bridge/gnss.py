@@ -12,7 +12,11 @@ Classes to handle Carla gnsss
 
 from carla_ros_bridge.sensor import Sensor
 
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.GNSSFaultInjector import GNSSFaultInjector
+from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import NavSatFix
+
+from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
 
 class Gnss(Sensor):
@@ -21,7 +25,7 @@ class Gnss(Sensor):
     Actor implementation details for gnss sensor
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id, fault_config_file=None):
         """
         Constructor
 
@@ -48,6 +52,12 @@ class Gnss(Sensor):
                                    carla_actor=carla_actor,
                                    synchronous_mode=synchronous_mode)
 
+        # Initialize the GNSSFaultInjector only if faults exist for this sensor
+        if fault_config_file and has_fault_for_sensor(fault_config_file, "GNSSSensor"):
+            self.fault_injector = GNSSFaultInjector(fault_config_file)
+        else:
+            self.fault_injector = None
+
         self.gnss_publisher = node.new_publisher(NavSatFix,
                                                  self.get_topic_prefix(),
                                                  qos_profile=10)
@@ -72,4 +82,19 @@ class Gnss(Sensor):
         navsatfix_msg.latitude = carla_gnss_measurement.latitude
         navsatfix_msg.longitude = carla_gnss_measurement.longitude
         navsatfix_msg.altitude = carla_gnss_measurement.altitude
+
+        # Apply fault injection if enabled
+        if self.fault_injector:
+            navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
+
         self.gnss_publisher.publish(navsatfix_msg)
+
+        # Extract GNSS data (latitude, longitude, altitude) from the sensor data
+        current_location = {
+            "latitude": carla_gnss_measurement.latitude,
+            "longitude": carla_gnss_measurement.longitude,
+            "altitude": carla_gnss_measurement.altitude
+        }
+
+        # Update the shared GNSSData class
+        GNSSData.update_location(current_location)

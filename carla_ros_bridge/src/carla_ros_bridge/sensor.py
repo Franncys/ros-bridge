@@ -43,8 +43,10 @@ _DATATYPES[PointField.FLOAT32] = ('f', 4)
 _DATATYPES[PointField.FLOAT64] = ('d', 8)
 
 import logging
+import FaultInjector.Tools as Tools
 import json
 from datetime import datetime
+import carla_ros_bridge.src.carla_ros_bridge.FaultInjector.FaultInjector as FaultInjector
 
 # Generate a unique log file name based on the current timestamp
 log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
@@ -75,6 +77,7 @@ class Sensor(Actor):
                  carla_actor,
                  synchronous_mode,
                  is_event_sensor=False,  # only relevant in synchronous_mode:
+                 #fault_config_file=None,
                  # if a sensor only delivers data on special events,
                  # do not wait for it. That means you might get data from a
                  # sensor, that belongs to a different frame
@@ -113,6 +116,7 @@ class Sensor(Actor):
         self.is_event_sensor = is_event_sensor
         self._callback_active = Lock()
         self.logging_enabled = False  # Flag to control logging
+        self.fault_injector = None
 
         try:
             self.sensor_tick_time = float(carla_actor.attributes["sensor_tick"])
@@ -198,7 +202,7 @@ class Sensor(Actor):
 
     def listen(self):
         self.carla_actor.listen(self._callback_sensor_data)
-
+             
     def destroy(self):
         """
         Function (override) to destroy this object.
@@ -223,6 +227,14 @@ class Sensor(Actor):
         if not self._callback_active.acquire(False):
             # if acquire fails, sensor is currently getting destroyed
             return
+        
+        if self.fault_injector:
+            self.fault_injector.check_and_trigger_faults(self, carla_sensor_data.timestamp, carla_sensor_data.transform.location)
+        
+        if carla_sensor_data is None:
+            self._callback_active.release()
+            return  # Skip processing if data is dropped
+
         if self.synchronous_mode:
             if self.sensor_tick_time:
                 self.next_data_expected_time = carla_sensor_data.timestamp + \
@@ -239,7 +251,6 @@ class Sensor(Actor):
                         "Sensor {}: Error while executing sensor_data_updated().".format(self.uid))
         
         self.log_sensor_data(carla_sensor_data)  # Log the sensor data
-
         self._callback_active.release()
 
 
