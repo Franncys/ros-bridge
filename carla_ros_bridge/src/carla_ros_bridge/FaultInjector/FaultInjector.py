@@ -1,7 +1,7 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from gnss_data import GNSSData
+from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
 class FaultInjector(ABC):
     def __init__(self, config_file, sensor_name):
