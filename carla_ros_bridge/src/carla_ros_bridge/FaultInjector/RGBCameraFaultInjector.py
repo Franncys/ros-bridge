@@ -1,4 +1,4 @@
-from carla_ros_bridge.FaultInjector import FaultInjector
+from carla_ros_bridge.FaultInjector.FaultInjector import FaultInjector
 import cv2
 import numpy as np
 
