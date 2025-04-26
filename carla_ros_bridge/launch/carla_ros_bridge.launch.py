@@ -17,7 +17,7 @@ def generate_launch_description():
         # Declare the fault configuration file argument
         launch.actions.DeclareLaunchArgument(
             name='fault_config_file',
-            default_value='',
+            default_value='/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/IMURotation.json',
             description='Path to the fault configuration file'
         ),
         launch.actions.DeclareLaunchArgument(
