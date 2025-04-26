@@ -375,8 +375,7 @@ class ActorFactory(object):
             fault_config_file = self.node.parameters.get("fault_config_file", None)
 
             #Lets print the fault_config_file in console
-            if fault_config_file is not None:
-                print("Fault configuration file: {}".format(fault_config_file))
+            print("Fault configuration file: {}".format(fault_config_file))
 
             if carla_actor.type_id.startswith("sensor.camera"):
                 if carla_actor.type_id.startswith("sensor.camera.rgb"):
