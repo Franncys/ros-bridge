@@ -1,4 +1,4 @@
-from FaultInjector import FaultInjector
+from carla_ros_bridge.FaultInjector import FaultInjector
 from transforms3d.euler import euler2quat
 import math
 

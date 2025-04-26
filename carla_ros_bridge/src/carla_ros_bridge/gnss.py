@@ -12,11 +12,11 @@ Classes to handle Carla gnsss
 
 from carla_ros_bridge.sensor import Sensor
 
-from FaultInjector.GNSSFaultInjector import GNSSFaultInjector
-from FaultInjector.Tools import has_fault_for_sensor
+from carla_ros_bridge.FaultInjector.GNSSFaultInjector import GNSSFaultInjector
+from carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import NavSatFix
 
-from FaultInjector.gnss_data import GNSSData
+from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
 
 class Gnss(Sensor):

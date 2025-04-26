@@ -1,4 +1,4 @@
-from FaultInjector import FaultInjector
+from carla_ros_bridge.FaultInjector import FaultInjector
 import numpy as np
 
 class LidarFaultInjector(FaultInjector):

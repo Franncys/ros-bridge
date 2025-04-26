@@ -1,4 +1,4 @@
-from FaultInjector import FaultInjector
+from carla_ros_bridge.FaultInjector import FaultInjector
 
 class GNSSFaultInjector(FaultInjector):
     def __init__(self, config_file):
