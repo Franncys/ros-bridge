@@ -43,7 +43,6 @@ _DATATYPES[PointField.FLOAT32] = ('f', 4)
 _DATATYPES[PointField.FLOAT64] = ('d', 8)
 
 import logging
-import FaultInjector.Tools as Tools
 import json
 from datetime import datetime
 import carla_ros_bridge.src.carla_ros_bridge.FaultInjector.FaultInjector as FaultInjector
