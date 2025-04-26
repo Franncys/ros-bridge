@@ -241,8 +241,8 @@ class RgbCamera(Camera):
         img_msg = self.get_ros_image(carla_camera_data)
 
         # Apply fault injection if enabled
-        if self.fault_injector:
-            img_msg = self.fault_injector.apply_faults(img_msg)
+        # if self.fault_injector:
+        #     img_msg = self.fault_injector.apply_faults(img_msg)
 
         # Publish camera info and image
         cam_info = self._camera_info

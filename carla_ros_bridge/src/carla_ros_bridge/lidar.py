@@ -108,8 +108,8 @@ class Lidar(Sensor):
         lidar_data = numpy.hstack((lidar_data, ring))
         
         # Apply fault injection if enabled
-        if self.fault_injector:
-            lidar_data = self.fault_injector.apply_faults({"points": lidar_data})["points"]
+        # if self.fault_injector:
+        #     lidar_data = self.fault_injector.apply_faults({"points": lidar_data})["points"]
 
         # we take the opposite of y axis
         # (as lidar point are express in left handed coordinate system, and ros need right handed)
