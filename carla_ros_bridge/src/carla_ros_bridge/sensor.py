@@ -113,7 +113,7 @@ class Sensor(Actor):
         self.is_event_sensor = is_event_sensor
         self._callback_active = Lock()
         self.logging_enabled = False  # Flag to control logging
-        #self.fault_injector = None
+        self.fault_injector = None
 
         try:
             self.sensor_tick_time = float(carla_actor.attributes["sensor_tick"])
@@ -225,8 +225,8 @@ class Sensor(Actor):
             # if acquire fails, sensor is currently getting destroyed
             return
         
-        # if self.fault_injector:
-        #     self.fault_injector.check_and_trigger_faults(self, carla_sensor_data.timestamp, carla_sensor_data.transform.location)
+        if self.fault_injector:
+            self.fault_injector.check_and_trigger_faults(self, carla_sensor_data.timestamp, carla_sensor_data.transform.location)
         
         if carla_sensor_data is None:
             self._callback_active.release()

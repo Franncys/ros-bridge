@@ -372,7 +372,7 @@ class ActorFactory(object):
                 actor = Vehicle(uid, name, parent, self.node, carla_actor)
         elif carla_actor.type_id.startswith("sensor"):
             # Retrieve the fault configuration file from the node parameters
-            #fault_config_file = self.node.get_param('fault_config_file', None)
+            fault_config_file = self.node.get_param('fault_config_file', None)
 
             if carla_actor.type_id.startswith("sensor.camera"):
                 if carla_actor.type_id.startswith("sensor.camera.rgb"):
@@ -410,7 +410,7 @@ class ActorFactory(object):
                              carla_actor, self.sync_mode, self._frame_id_map[uid])#, fault_config_file)
             elif carla_actor.type_id.startswith("sensor.other.imu"):
                 actor = ImuSensor(uid, name, parent, spawn_pose, self.node,
-                                  carla_actor, self.sync_mode, self._frame_id_map[uid])#, fault_config_file)
+                                  carla_actor, self.sync_mode, self._frame_id_map[uid], fault_config_file)
             elif carla_actor.type_id.startswith("sensor.other.collision"):
                 actor = CollisionSensor(uid, name, parent, spawn_pose,
                                         self.node, carla_actor, self.sync_mode)
