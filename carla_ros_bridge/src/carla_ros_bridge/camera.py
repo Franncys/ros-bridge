@@ -192,7 +192,7 @@ class RgbCamera(Camera):
     Camera implementation details for rgb camera
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id=None, fault_config_file=None):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id=None):#, fault_config_file=None):
         """
         Constructor
 

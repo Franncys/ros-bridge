@@ -25,7 +25,7 @@ class Gnss(Sensor):
     Actor implementation details for gnss sensor
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id, fault_config_file=None):
+    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode, frame_id):#, fault_config_file=None):
         """
         Constructor
 
@@ -90,11 +90,11 @@ class Gnss(Sensor):
         self.gnss_publisher.publish(navsatfix_msg)
 
         # Extract GNSS data (latitude, longitude, altitude) from the sensor data
-        current_location = {
-            "latitude": carla_gnss_measurement.latitude,
-            "longitude": carla_gnss_measurement.longitude,
-            "altitude": carla_gnss_measurement.altitude
-        }
+        # current_location = {
+        #     "latitude": carla_gnss_measurement.latitude,
+        #     "longitude": carla_gnss_measurement.longitude,
+        #     "altitude": carla_gnss_measurement.altitude
+        # }
 
-        # Update the shared GNSSData class
-        GNSSData.update_location(current_location)
+        # # Update the shared GNSSData class
+        # GNSSData.update_location(current_location)
