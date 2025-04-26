@@ -52,10 +52,10 @@ class ImuSensor(Sensor):
                                         synchronous_mode=synchronous_mode)
 
         # Initialize the IMUFaultInjector only if faults exist for this sensor
-        if fault_config_file and has_fault_for_sensor(fault_config_file, "IMUSensor"):
-            self.fault_injector = IMUFaultInjector(fault_config_file)
-        else:
-            self.fault_injector = None
+        # if fault_config_file and has_fault_for_sensor(fault_config_file, "IMUSensor"):
+        #     self.fault_injector = IMUFaultInjector(fault_config_file)
+        # else:
+        #     self.fault_injector = None
             
         self.imu_publisher = node.new_publisher(Imu, self.get_topic_prefix(), qos_profile=10)
         self.listen()
@@ -96,7 +96,7 @@ class ImuSensor(Sensor):
         imu_msg.orientation.z = quat[3]
 
         # Apply fault injection
-        if self.fault_injector:
-            imu_msg = self.fault_injector.apply_faults(imu_msg)
+        # if self.fault_injector:
+        #     imu_msg = self.fault_injector.apply_faults(imu_msg)
 
         self.imu_publisher.publish(imu_msg)

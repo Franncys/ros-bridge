@@ -230,28 +230,28 @@ class RgbCamera(Camera):
         self.listen()
 
     # pylint: disable=arguments-differ
-    def sensor_data_updated(self, carla_camera_data):
-        """
-        Override the base method to add RGB camera-specific logic.
+    # def sensor_data_updated(self, carla_camera_data):
+    #     """
+    #     Override the base method to add RGB camera-specific logic.
 
-        :param carla_camera_data: carla camera data object
-        :type carla_camera_data: carla.Image
-        """
-        # Convert CARLA camera data to ROS image message
-        img_msg = self.get_ros_image(carla_camera_data)
+    #     :param carla_camera_data: carla camera data object
+    #     :type carla_camera_data: carla.Image
+    #     """
+    #     # Convert CARLA camera data to ROS image message
+    #     img_msg = self.get_ros_image(carla_camera_data)
 
-        # Apply fault injection if enabled
-        # if self.fault_injector:
-        #     img_msg = self.fault_injector.apply_faults(img_msg)
+    #     # Apply fault injection if enabled
+    #     # if self.fault_injector:
+    #     #     img_msg = self.fault_injector.apply_faults(img_msg)
 
-        # Publish camera info and image
-        cam_info = self._camera_info
-        cam_info.header = img_msg.header
-        self.camera_info_publisher.publish(cam_info)
-        self.camera_image_publisher.publish(img_msg)
+    #     # Publish camera info and image
+    #     cam_info = self._camera_info
+    #     cam_info.header = img_msg.header
+    #     self.camera_info_publisher.publish(cam_info)
+    #     self.camera_image_publisher.publish(img_msg)
 
-        # Log the processed data (optional)
-        self.node.loginfo(f"Published RGB image from {self.name} (UID: {self.uid})")
+    #     # Log the processed data (optional)
+    #     self.node.loginfo(f"Published RGB image from {self.name} (UID: {self.uid})")
         
 
     def get_carla_image_data_array(self, carla_image):
