@@ -372,7 +372,7 @@ class ActorFactory(object):
                 actor = Vehicle(uid, name, parent, self.node, carla_actor)
         elif carla_actor.type_id.startswith("sensor"):
             # Retrieve the fault configuration file from the node parameters
-            fault_config_file = self.node.parameters.get("fault_config_file", None)
+            fault_config_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/IMURotation.json'
 
             #Lets print the fault_config_file in console
             print("Fault configuration file: {}".format(fault_config_file))
