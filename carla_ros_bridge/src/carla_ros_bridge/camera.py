@@ -221,10 +221,10 @@ class RgbCamera(Camera):
                                         frame_id=frame_id)
         
         # Initialize the RGBCameraFaultInjector only if faults exist for this sensor
-        if fault_config_file and has_fault_for_sensor(fault_config_file, "RGBCamera"):
-            self.fault_injector = RGBCameraFaultInjector(fault_config_file)
-        else:
-            self.fault_injector = None
+        # if fault_config_file and has_fault_for_sensor(fault_config_file, "RGBCamera"):
+        #     self.fault_injector = RGBCameraFaultInjector(fault_config_file)
+        # else:
+        #     self.fault_injector = None
             
         self._frame_id = frame_id
         self.listen()

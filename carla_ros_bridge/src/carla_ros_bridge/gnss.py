@@ -53,10 +53,10 @@ class Gnss(Sensor):
                                    synchronous_mode=synchronous_mode)
 
         # Initialize the GNSSFaultInjector only if faults exist for this sensor
-        if fault_config_file and has_fault_for_sensor(fault_config_file, "GNSSSensor"):
-            self.fault_injector = GNSSFaultInjector(fault_config_file)
-        else:
-            self.fault_injector = None
+        # if fault_config_file and has_fault_for_sensor(fault_config_file, "GNSSSensor"):
+        #     self.fault_injector = GNSSFaultInjector(fault_config_file)
+        # else:
+        #     self.fault_injector = None
 
         self.gnss_publisher = node.new_publisher(NavSatFix,
                                                  self.get_topic_prefix(),
@@ -83,9 +83,9 @@ class Gnss(Sensor):
         navsatfix_msg.longitude = carla_gnss_measurement.longitude
         navsatfix_msg.altitude = carla_gnss_measurement.altitude
 
-        # Apply fault injection if enabled
-        if self.fault_injector:
-            navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
+        # # Apply fault injection if enabled
+        # if self.fault_injector:
+        #     navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
 
         self.gnss_publisher.publish(navsatfix_msg)
 

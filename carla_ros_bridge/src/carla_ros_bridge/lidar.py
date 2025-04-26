@@ -58,11 +58,11 @@ class Lidar(Sensor):
                                     carla_actor=carla_actor,
                                     synchronous_mode=synchronous_mode)
         
-        # Initialize the LidarFaultInjector only if faults exist for this sensor
-        if fault_config_file and has_fault_for_sensor(fault_config_file, "LidarSensor"):
-            self.fault_injector = LidarFaultInjector(fault_config_file)
-        else:
-            self.fault_injector = None
+        # # Initialize the LidarFaultInjector only if faults exist for this sensor
+        # if fault_config_file and has_fault_for_sensor(fault_config_file, "LidarSensor"):
+        #     self.fault_injector = LidarFaultInjector(fault_config_file)
+        # else:
+        #     self.fault_injector = None
 
         self.lidar_publisher = node.new_publisher(PointCloud2,
                                                   self.get_topic_prefix(),
