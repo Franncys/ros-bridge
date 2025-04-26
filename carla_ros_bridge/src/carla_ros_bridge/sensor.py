@@ -127,12 +127,12 @@ class Sensor(Actor):
             self._tf_broadcaster = tf2_ros.TransformBroadcaster(node)
 
         # Subscribe to the logging control topic
-        self.node.create_subscription(
-            bool,
-            '/sensor_logging_control',
-            self._logging_control_callback,
-            qos_profile=10
-        )
+        # self.node.create_subscription(
+        #     bool,
+        #     '/sensor_logging_control',
+        #     self._logging_control_callback,
+        #     qos_profile=10
+        # )
 
     def _logging_control_callback(self, msg):
         """
