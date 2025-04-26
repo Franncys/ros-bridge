@@ -45,8 +45,6 @@ _DATATYPES[PointField.FLOAT64] = ('d', 8)
 import logging
 import json
 from datetime import datetime
-import carla_ros_bridge.src.carla_ros_bridge.FaultInjector.FaultInjector as FaultInjector
-
 # Generate a unique log file name based on the current timestamp
 log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
