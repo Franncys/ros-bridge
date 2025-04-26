@@ -372,11 +372,12 @@ class ActorFactory(object):
                 actor = Vehicle(uid, name, parent, self.node, carla_actor)
         elif carla_actor.type_id.startswith("sensor"):
             # Retrieve the fault configuration file from the node parameters
-            fault_config_file = self.node.parameters["fault_config_file"]
+            fault_config_file = self.node.parameters.get("fault_config_file", None)
 
             #Lets print the fault_config_file in console
-            print("Fault configuration file: {}".format(fault_config_file))
-            
+            if fault_config_file is not None:
+                print("Fault configuration file: {}".format(fault_config_file))
+
             if carla_actor.type_id.startswith("sensor.camera"):
                 if carla_actor.type_id.startswith("sensor.camera.rgb"):
                     actor = RgbCamera(uid, name, parent, spawn_pose, self.node,
