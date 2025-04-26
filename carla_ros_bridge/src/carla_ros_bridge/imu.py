@@ -13,7 +13,7 @@ import carla_common.transforms as trans
 
 from carla_ros_bridge.sensor import Sensor
 
-from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
+from carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import Imu
 
 from carla_ros_bridge.FaultInjector.IMUFaultInjector import IMUFaultInjector

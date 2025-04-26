@@ -17,10 +17,10 @@ from abc import abstractmethod
 import carla
 import numpy
 import transforms3d
-from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
+from FaultInjector.Tools import has_fault_for_sensor
 from cv_bridge import CvBridge
 
-from carla_ros_bridge.FaultInjector.RGBCameraFaultInjector import RGBCameraFaultInjector
+from FaultInjector.RGBCameraFaultInjector import RGBCameraFaultInjector
 
 import carla_common.transforms as trans
 from ros_compatibility.core import get_ros_version

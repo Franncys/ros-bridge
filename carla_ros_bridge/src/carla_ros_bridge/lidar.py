@@ -18,8 +18,8 @@ import logging
 
 from carla_ros_bridge.sensor import Sensor, create_cloud
 
-from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.LidarFaultInjector import LidarFaultInjector
-from carla_ros_bridge.src.carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
+from carla_ros_bridge.FaultInjector.LidarFaultInjector import LidarFaultInjector
+from carla_ros_bridge.FaultInjector.Tools import has_fault_for_sensor
 from sensor_msgs.msg import PointCloud2, PointField
 from rclpy import qos
 
