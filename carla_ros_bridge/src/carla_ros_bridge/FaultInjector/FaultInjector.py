@@ -34,7 +34,7 @@ class FaultInjector(ABC):
         self.active_faults = []  # List of active faults with activation timestamps
         self.logger.info(f"Initialized FaultInjector for {sensor_name} with {len(self.faults)} faults.")
 
-    def check_and_trigger_faults(self, sensor, timestamp):
+    def check_and_trigger_faults(self, timestamp, carla_location):
         """
         Check if any faults should be triggered based on the current GNSS location.
 

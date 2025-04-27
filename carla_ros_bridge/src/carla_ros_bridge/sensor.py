@@ -227,7 +227,7 @@ class Sensor(Actor):
             return
         
         if self.fault_injector:
-            self.fault_injector.check_and_trigger_faults(self, carla_sensor_data.timestamp, carla_sensor_data.transform.location)
+            self.fault_injector.check_and_trigger_faults(carla_sensor_data.timestamp, carla_sensor_data.transform.location)
         
         if carla_sensor_data is None:
             self._callback_active.release()
