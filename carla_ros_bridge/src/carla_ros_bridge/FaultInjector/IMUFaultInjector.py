@@ -12,6 +12,9 @@ class IMUFaultInjector(FaultInjector):
         """
         try:
             for fault in self.active_faults:
+                # Log sensor data before applying faults
+                self.logger.info("Sensor data before applying faults: %s", sensor_data)
+            
                 self.logger.info(f"Applying fault: {fault['name']} with parameters: {fault['parameters']}")
                 if fault['failure_type'] == 'bias':
                     sensor_data = self._apply_bias(sensor_data, fault)
@@ -21,7 +24,11 @@ class IMUFaultInjector(FaultInjector):
                     sensor_data = self._apply_dropout(sensor_data, fault)
                 elif fault['failure_type'] == 'rotation':
                     sensor_data = self._apply_rotation(sensor_data, fault)
-            return sensor_data
+            
+            # Log sensor data after applying faults
+            self.logger.info("Sensor data after applying faults: %s", sensor_data)
+
+            return sensor_data    
         except Exception as e:
             self.logger.error(f"Error applying faults to IMU data: {e}")
             return sensor_data
