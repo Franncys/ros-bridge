@@ -47,6 +47,9 @@ class FaultInjector(ABC):
         :param sensor: The sensor instance.
         :param timestamp: The current timestamp.
         """
+        #log carla_location
+        self.logger.info(f"Carla location: {carla_location} at timestamp {timestamp}.")
+
         current_location = GNSSData.get_location()
         if not current_location:
             self.logger.warning("No GNSS location available. Skipping fault trigger check.")
