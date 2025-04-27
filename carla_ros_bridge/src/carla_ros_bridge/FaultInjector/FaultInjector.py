@@ -14,7 +14,7 @@ class FaultInjector(ABC):
         :type sensor_name: str
         """
         # Set up logging
-        log_file_name = f"/tum/SensorLogs/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        log_file_name = f"/tmp/SensorLogs/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
         self.logger = logging.getLogger(f"FaultInjector-{sensor_name}")
         self.logger.setLevel(logging.DEBUG)
