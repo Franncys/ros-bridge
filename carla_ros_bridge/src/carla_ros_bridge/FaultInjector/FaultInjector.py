@@ -1,5 +1,5 @@
 import json
-import logging
+import logging, datetime
 from abc import ABC, abstractmethod
 from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
@@ -16,7 +16,7 @@ class FaultInjector(ABC):
         # Set up logging
         self.logger = logging.getLogger(f"FaultInjector-{sensor_name}")
         self.logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(f"{sensor_name}_fault_injection.log")
+        file_handler = logging.FileHandler(f"/tum/SensorLogs/FaultInjection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
         file_handler.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
