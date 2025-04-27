@@ -12,7 +12,11 @@ class RGBCameraFaultInjector(FaultInjector):
         """
         try:
             for fault in self.active_faults:
+                # Log sensor data before applying faults
+                self.logger.info("RGB Camera data before applying faults: %s", sensor_data)
+            
                 self.logger.info(f"Applying fault: {fault['name']} with parameters: {fault['parameters']}")
+                
                 if fault['failure_type'] == 'blur':
                     sensor_data = self._apply_blur(sensor_data, fault)
                 elif fault['failure_type'] == 'noise':
@@ -20,6 +24,10 @@ class RGBCameraFaultInjector(FaultInjector):
                 elif fault['failure_type'] == 'dropout':
                     sensor_data = self._apply_dropout(sensor_data, fault)
                 # Add more RGB camera-specific fault types as needed
+            
+            # Log sensor data after applying faults
+            self.logger.info("RGB Camera data after applying faults: %s", sensor_data)
+
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying faults to RGB camera data: {e}")

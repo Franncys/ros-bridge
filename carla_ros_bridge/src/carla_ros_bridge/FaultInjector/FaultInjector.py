@@ -46,6 +46,9 @@ class FaultInjector(ABC):
             self.logger.warning("No GNSS location available. Skipping fault trigger check.")
             return
 
+        # Log the current GNSS location
+        self.logger.info(f"Current GNSS location: {current_location} at timestamp {timestamp}.")
+
         # Check and trigger new faults
         for fault in self.faults:
             if self._is_triggered(fault, timestamp, current_location):
@@ -104,6 +107,10 @@ class FaultInjector(ABC):
         :param current_location: The current GNSS location.
         :return: True if the current location matches the fault location, False otherwise.
         """
+        # Log the fault location and current location
+        self.logger.info(f"Fault location: {fault_location}, Current location: {current_location}")
+
+        # Check if the current location is within a small tolerance of the fault location
         return (
             abs(fault_location['latitude'] - current_location.get('latitude', 0)) < 1e-6 and
             abs(fault_location['longitude'] - current_location.get('longitude', 0)) < 1e-6 and
