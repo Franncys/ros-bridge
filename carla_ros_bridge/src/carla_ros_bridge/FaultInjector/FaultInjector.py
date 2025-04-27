@@ -14,12 +14,18 @@ class FaultInjector(ABC):
         :type sensor_name: str
         """
         # Set up logging
+        log_file_name = f"/tum/SensorLogs/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+        
         self.logger = logging.getLogger(f"FaultInjector-{sensor_name}")
         self.logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(f"/tum/SensorLogs/FaultInjection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
+        file_handler = logging.FileHandler(log_file_name)
         file_handler.setLevel(logging.DEBUG)
+        
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
+        
         self.logger.addHandler(file_handler)
 
         # Load and filter faults
