@@ -16,7 +16,6 @@ class FaultInjector(ABC):
         # Set up logging
         log_file_name = f"/tum/SensorLogs/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
-        
         self.logger = logging.getLogger(f"FaultInjector-{sensor_name}")
         self.logger.setLevel(logging.DEBUG)
 
@@ -25,7 +24,7 @@ class FaultInjector(ABC):
         
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
-        
+
         self.logger.addHandler(file_handler)
 
         # Load and filter faults
