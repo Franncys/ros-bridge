@@ -11,18 +11,19 @@ class IMUFaultInjector(FaultInjector):
         Apply IMU-specific faults to the sensor data.
         """
         try:
-            for fault in self.active_faults:
+            for active_fault in self.active_faults:
+                fault = active_fault["fault"] 
                 # Log sensor data before applying faults
                 self.logger.info("IMU Sensor data before applying faults: %s", sensor_data)
-            
+
                 self.logger.info(f"Applying fault: {fault['name']} with parameters: {fault['parameters']}")
-                if fault['failure_type'] == 'bias':
+                if fault['name'] == 'bias':
                     sensor_data = self._apply_bias(sensor_data, fault)
-                elif fault['failure_type'] == 'noise':
+                elif fault['name'] == 'noise':
                     sensor_data = self._apply_noise(sensor_data, fault)
-                elif fault['failure_type'] == 'dropout':
+                elif fault['name'] == 'dropout':
                     sensor_data = self._apply_dropout(sensor_data, fault)
-                elif fault['failure_type'] == 'rotation':
+                elif fault['name'] == 'rotation':
                     sensor_data = self._apply_rotation(sensor_data, fault)
                 # Log sensor data after applying faults
                 self.logger.info("IMU Sensor data after applying faults: %s", sensor_data)
