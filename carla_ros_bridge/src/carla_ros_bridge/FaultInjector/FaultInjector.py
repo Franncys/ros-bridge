@@ -107,20 +107,31 @@ class FaultInjector(ABC):
             return True
         return False
 
-    def _is_within_location(self, fault_location, current_location):
+    def _is_within_location(self, fault_location, current_location, tolerance=0.5):
         """
-        Check if the current location matches the fault trigger location.
+        Check if the current Carla location is approximately within the fault trigger location.
 
-        :param fault_location: The location specified in the fault trigger.
-        :param current_location: The current GNSS location.
-        :return: True if the current location matches the fault location, False otherwise.
+        :param fault_location: The location specified in the fault trigger (x, y, z).
+        :param current_location: The current Carla location (x, y, z).
+        :param tolerance: The maximum distance allowed for a match (default: 0.5 meters).
+        :return: True if the current location is within the tolerance of the fault location, False otherwise.
         """
         # Log the fault location and current location
         self.logger.info(f"Fault location: {fault_location}, Current location: {current_location}")
 
-        # Check if the current location is within a small tolerance of the fault location
-        return (
-            abs(fault_location['x'] - current_location.x) < 1e-2 and
-            abs(fault_location['y'] - current_location.y) < 1e-2 and
-            abs(fault_location['z'] - current_location.z) < 1e-2
-        )
+        try:
+            # Calculate the Euclidean distance between the fault location and the current location
+            distance = ((fault_location['x'] - current_location.x) ** 2 +
+                        (fault_location['y'] - current_location.y) ** 2 +
+                        (fault_location['z'] - current_location.z) ** 2) ** 0.5
+
+            # Log the calculated distance
+            self.logger.info(f"Distance between fault location and current location: {distance:.3f} meters")
+
+            # Check if the distance is within the tolerance
+            result = distance <= tolerance
+            self.logger.info(f"Location match result: {result} (tolerance: {tolerance} meters)")
+            return result
+        except KeyError as e:
+            self.logger.error(f"KeyError in fault location or current location: {e}")
+            return False
