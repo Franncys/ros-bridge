@@ -50,17 +50,16 @@ class FaultInjector(ABC):
         #log carla_location
         self.logger.info(f"Carla location: {carla_location} at timestamp {timestamp}.")
 
-        current_location = GNSSData.get_location()
-        if not current_location:
-            self.logger.warning("No GNSS location available. Skipping fault trigger check.")
-            return
-
+        # current_location = GNSSData.get_location()
+        # if not current_location:
+        #     self.logger.warning("No GNSS location available. Skipping fault trigger check.")
+        #     return
         # Log the current GNSS location
-        self.logger.info(f"Current GNSS location: {current_location} at timestamp {timestamp}.")
+        #self.logger.info(f"Current GNSS location: {current_location} at timestamp {timestamp}.")
 
         # Check and trigger new faults
         for fault in self.faults:
-            if self._is_triggered(fault, timestamp, current_location):
+            if self._is_triggered(fault, timestamp, carla_location):
                 self.active_faults.append({
                     "fault": fault,
                     "activation_time": timestamp
@@ -121,7 +120,7 @@ class FaultInjector(ABC):
 
         # Check if the current location is within a small tolerance of the fault location
         return (
-            abs(fault_location['latitude'] - current_location.get('latitude', 0)) < 1e-6 and
-            abs(fault_location['longitude'] - current_location.get('longitude', 0)) < 1e-6 and
-            abs(fault_location['altitude'] - current_location.get('altitude', 0)) < 1e-2
+            abs(fault_location['x'] - current_location.x) < 1e-2 and
+            abs(fault_location['y'] - current_location.y) < 1e-2 and
+            abs(fault_location['z'] - current_location.z) < 1e-2
         )
