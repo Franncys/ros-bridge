@@ -47,7 +47,7 @@ import logging
 import json
 from datetime import datetime
 # Generate a unique log file name based on the current timestamp
-log_file_name = f"sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
 # Configure the logger
 logger = logging.getLogger("SensorLogger")
