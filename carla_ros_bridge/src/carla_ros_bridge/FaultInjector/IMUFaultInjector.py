@@ -56,6 +56,12 @@ class IMUFaultInjector(FaultInjector):
             else:
                 raise ValueError(f"Invalid axis '{axis}' specified in fault configuration. Must be 'x', 'y', or 'z'.")
 
+            #log actujal rotation
+            self.logger.info(f"Applying rotation: axis={axis}, angle={angle_degrees} degrees (radians: {angle_radians})")
+
+            # Log the original orientation
+            self.logger.info(f"Original orientation: w={sensor_data.orientation.w}, x={sensor_data.orientation.x}, y={sensor_data.orientation.y}, z={sensor_data.orientation.z}")
+
             # Convert the rotation to a quaternion
             quat = euler2quat(roll, pitch, yaw)  # Convert to quaternion
 
@@ -64,6 +70,9 @@ class IMUFaultInjector(FaultInjector):
             sensor_data.orientation.x = quat[1]
             sensor_data.orientation.y = quat[2]
             sensor_data.orientation.z = quat[3]
+
+            # Log the new orientation
+            self.logger.info(f"New orientation after rotation: w={sensor_data.orientation.w}, x={sensor_data.orientation.x}, y={sensor_data.orientation.y}, z={sensor_data.orientation.z}")
 
             return sensor_data
         except Exception as e:
