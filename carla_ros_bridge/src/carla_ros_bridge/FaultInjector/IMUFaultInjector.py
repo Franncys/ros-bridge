@@ -28,6 +28,8 @@ class IMUFaultInjector(FaultInjector):
                 # Log sensor data after applying faults
                 self.logger.info("IMU Sensor data after applying faults: %s", sensor_data)
                 return sensor_data    
+            
+            return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying faults to IMU data: {e}")
             return sensor_data
