@@ -1,5 +1,6 @@
 import json
-import logging, datetime
+import logging
+from datetime import datetime
 from abc import ABC, abstractmethod
 from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
