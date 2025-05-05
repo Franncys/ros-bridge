@@ -127,35 +127,35 @@ class Sensor(Actor):
         elif ROS_VERSION == 2:
             self._tf_broadcaster = tf2_ros.TransformBroadcaster(node)
 
-        # Subscribe to the logging control topic
-        self.node.create_subscription(
-            Bool,
-            '/sensor_logging_control',
-            self._logging_control_callback,
-            qos_profile=10
-        )
+    #     # Subscribe to the logging control topic
+    #     self.node.create_subscription(
+    #         Bool,
+    #         '/sensor_logging_control',
+    #         self._logging_control_callback,
+    #         qos_profile=10
+    #     )
 
-    def _logging_control_callback(self, msg):
-        """
-        Callback to handle logging control messages.
+    # def _logging_control_callback(self, msg):
+    #     """
+    #     Callback to handle logging control messages.
 
-        :param msg: ROS message of type std_msgs/Bool
-        """
-        self.logging_enabled = msg.data
-        if self.logging_enabled:
-            # Generate a new log file name with the current timestamp
-            log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    #     :param msg: ROS message of type std_msgs/Bool
+    #     """
+    #     self.logging_enabled = msg.data
+    #     if self.logging_enabled:
+    #         # Generate a new log file name with the current timestamp
+    #         log_file_name = f"/tmp/sensor_data_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
             
-            # Reconfigure the logger to use the new file
-            global logger
-            for handler in logger.handlers[:]:  # Remove all existing handlers
-                logger.removeHandler(handler)
-            file_handler = logging.FileHandler(log_file_name)
-            file_handler.setLevel(logging.INFO)
-            logger.addHandler(file_handler)
-            self.node.loginfo(f"Sensors Logging enabled")
-        else:
-            self.node.loginfo(f"Sensors Logging disabled")
+    #         # Reconfigure the logger to use the new file
+    #         global logger
+    #         for handler in logger.handlers[:]:  # Remove all existing handlers
+    #             logger.removeHandler(handler)
+    #         file_handler = logging.FileHandler(log_file_name)
+    #         file_handler.setLevel(logging.INFO)
+    #         logger.addHandler(file_handler)
+    #         self.node.loginfo(f"Sensors Logging enabled")
+    #     else:
+    #         self.node.loginfo(f"Sensors Logging disabled")
 
 
     def get_ros_transform(self, pose, timestamp):

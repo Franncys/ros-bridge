@@ -117,7 +117,7 @@ class FaultInjector(ABC):
         :return: True if the current location is within the tolerance of the fault location, False otherwise.
         """
         # Log the fault location and current location
-        self.logger.info(f"Fault location: {fault_location}, Current location: {current_location}")
+        #self.logger.info(f"Fault location: {fault_location}, Current location: {current_location}")
 
         try:
             # Calculate the Euclidean distance between the fault location and the current location
@@ -126,11 +126,13 @@ class FaultInjector(ABC):
                         (fault_location['z'] - current_location.z) ** 2) ** 0.5
 
             # Log the calculated distance
-            self.logger.info(f"Distance between fault location and current location: {distance:.3f} meters")
+            #self.logger.info(f"Distance between fault location and current location: {distance:.3f} meters")
 
             # Check if the distance is within the tolerance
             result = distance <= tolerance
-            self.logger.info(f"Location match result: {result} (tolerance: {tolerance} meters)")
+            if result:
+                self.logger.info(f"Location match successful: {fault_location} within {tolerance} meters of {current_location}")
+            #self.logger.info(f"Location match result: {result} (tolerance: {tolerance} meters)")
             return result
         except KeyError as e:
             self.logger.error(f"KeyError in fault location or current location: {e}")
