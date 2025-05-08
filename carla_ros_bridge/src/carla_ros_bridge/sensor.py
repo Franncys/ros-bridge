@@ -145,7 +145,7 @@ class Sensor(Actor):
         """
         new_file = msg.data
         self.node.loginfo(f"Received new fault injection file: {new_file}")
-
+        print(f"Received new fault injection file: {new_file}")
         # Reload the fault injector with the new file
         try:
             if self.fault_injector:
