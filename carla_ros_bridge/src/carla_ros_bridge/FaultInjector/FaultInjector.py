@@ -29,16 +29,18 @@ class FaultInjector(ABC):
         self.logger.addHandler(file_handler)
 
         # Load and filter faults
-        with open(config_file, 'r') as f:
-            all_faults = json.load(f)
+        self._load_faults(config_file)
         
-        self.faults = []
-        for fault_entry in all_faults:
-            if fault_entry['sensor'] == sensor_name:
-                self.faults.extend(fault_entry['faults'])
+        # with open(config_file, 'r') as f:
+        #     all_faults = json.load(f)
         
-        self.active_faults = []  # List of active faults with activation timestamps
-        self.logger.info(f"Initialized FaultInjector for {sensor_name} with {len(self.faults)} faults.")
+        # self.faults = []
+        # for fault_entry in all_faults:
+        #     if fault_entry['sensor'] == sensor_name:
+        #         self.faults.extend(fault_entry['faults'])
+        
+        # self.active_faults = []  # List of active faults with activation timestamps
+        # self.logger.info(f"Initialized FaultInjector for {sensor_name} with {len(self.faults)} faults.")
 
     def check_and_trigger_faults(self, timestamp, carla_location):
         """
@@ -137,3 +139,31 @@ class FaultInjector(ABC):
         except KeyError as e:
             self.logger.error(f"KeyError in fault location or current location: {e}")
             return False
+    
+    def _load_faults(self, config_file):
+        """
+        Load faults from the specified configuration file.
+
+        :param config_file: Path to the fault configuration file.
+        :type config_file: str
+        """
+        with open(config_file, 'r') as f:
+            all_faults = json.load(f)
+
+        self.faults = []
+        for fault_entry in all_faults:
+            if fault_entry['sensor'] == self.sensor_name:
+                self.faults.extend(fault_entry['faults'])
+
+        self.active_faults = []  # Reset active faults
+        self.logger.info(f"Loaded {len(self.faults)} faults from {config_file}.")
+
+    def reload_faults(self, new_file):
+        """
+        Reload faults from a new configuration file.
+
+        :param new_file: Path to the new fault configuration file.
+        :type new_file: str
+        """
+        self.logger.info(f"Reloading faults from file: {new_file}")
+        self._load_faults(new_file)

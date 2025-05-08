@@ -30,6 +30,7 @@ from carla_ros_bridge.actor import Actor
 
 from sensor_msgs.msg import PointCloud2, PointField
 from std_msgs.msg import Bool
+from std_msgs.msg import String 
 
 ROS_VERSION = roscomp.get_ros_version()
 
@@ -126,6 +127,34 @@ class Sensor(Actor):
             self._tf_broadcaster = tf2_ros.TransformBroadcaster()
         elif ROS_VERSION == 2:
             self._tf_broadcaster = tf2_ros.TransformBroadcaster(node)
+
+        # Subscribe to the fault injection file topic
+        self.node.create_subscription(
+            String,
+            '/fault_injection_file',
+            self._fault_injection_file_callback,
+            qos_profile=10
+        )
+    
+    def _fault_injection_file_callback(self, msg):
+        """
+        Callback to handle updates to the fault injection file.
+
+        :param msg: ROS message containing the new fault injection file name.
+        :type msg: std_msgs.msg.String
+        """
+        new_file = msg.data
+        self.node.loginfo(f"Received new fault injection file: {new_file}")
+
+        # Reload the fault injector with the new file
+        try:
+            if self.fault_injector:
+                self.fault_injector.reload_faults(new_file)
+                self.node.loginfo(f"Successfully reloaded fault injector with file: {new_file}")
+            else:
+                self.node.logwarn("Fault injector is not initialized.")
+        except Exception as e:
+            self.node.logerr(f"Failed to reload fault injector: {e}")
 
     #     # Subscribe to the logging control topic
     #     self.node.create_subscription(
