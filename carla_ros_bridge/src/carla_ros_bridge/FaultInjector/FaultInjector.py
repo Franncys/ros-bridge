@@ -29,8 +29,9 @@ class FaultInjector(ABC):
         self.logger.addHandler(file_handler)
 
         # Load and filter faults
+        self.sensor_name = sensor_name
         self._load_faults(config_file)
-        
+
         # with open(config_file, 'r') as f:
         #     all_faults = json.load(f)
         
