@@ -58,7 +58,6 @@ class FaultInjector(ABC):
         :param timestamp: The current timestamp.
         """
         #log carla_location
-        self.logger.info(f"Carla location: {carla_location} at timestamp {timestamp}.")
 
         # current_location = GNSSData.get_location()
         # if not current_location:
@@ -69,8 +68,9 @@ class FaultInjector(ABC):
 
         # Check and trigger new faults
         for fault in self.faults:
-            self.logger.info("Checking Fault: ", fault)
-            self.logger.info("Fault Trigger: ", fault['trigger'])
+            self.logger.info(f"Carla location: {carla_location} at timestamp {timestamp}.")
+            self.logger.info(f"Checking Fault: {json.dumps(fault, indent=2)}")  # Properly format fault details
+            self.logger.info(f"Fault Trigger: {json.dumps(fault.get('trigger', {}), indent=2)}")  # Properly format trigger details
 
             if self._is_triggered(fault, timestamp, carla_location):
                 self.active_faults.append({
