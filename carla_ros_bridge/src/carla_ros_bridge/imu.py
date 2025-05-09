@@ -52,10 +52,11 @@ class ImuSensor(Sensor):
                                         synchronous_mode=synchronous_mode)
 
         # Initialize the IMUFaultInjector only if faults exist for this sensor
-        if fault_config_file and has_fault_for_sensor(fault_config_file, "IMUSensor"):
-            self.fault_injector = IMUFaultInjector(fault_config_file)
-        else:
-            self.fault_injector = None
+        #if fault_config_file and has_fault_for_sensor(fault_config_file, "IMUSensor"):
+        # We now load the injection file dynamically
+        self.fault_injector = IMUFaultInjector()
+        #else:
+        #self.fault_injector = None
             
         self.imu_publisher = node.new_publisher(Imu, self.get_topic_prefix(), qos_profile=10)
         self.listen()

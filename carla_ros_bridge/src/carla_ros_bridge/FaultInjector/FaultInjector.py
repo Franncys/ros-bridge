@@ -28,9 +28,16 @@ class FaultInjector(ABC):
 
         self.logger.addHandler(file_handler)
 
-        # Load and filter faults
+        # Initialize faults
         self.sensor_name = sensor_name
-        self._load_faults(config_file)
+        self.faults = []
+        self.active_faults = []
+
+        # Load faults if a configuration file is provided
+        if config_file:
+            self._load_faults(config_file)
+        else:
+            self.logger.info(f"No fault configuration file provided for {sensor_name}. Fault injection disabled.")
 
         # with open(config_file, 'r') as f:
         #     all_faults = json.load(f)
@@ -167,8 +174,11 @@ class FaultInjector(ABC):
         :param new_file: Path to the new fault configuration file.
         :type new_file: str
         """
-        self.logger.info(f"Reloading faults from file: {new_file}")
-
+        
         # TO CHANGE FOR THE MOMENT THE FILE IS HARDCODED
         new_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/' + new_file
+        
+        self.logger.info(f"Reloading faults from file: {new_file}")
+        print("Reloading faults from file: ", new_file)
+
         self._load_faults(new_file)

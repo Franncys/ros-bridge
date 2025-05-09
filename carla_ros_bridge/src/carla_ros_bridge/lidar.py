@@ -59,6 +59,7 @@ class Lidar(Sensor):
                                     synchronous_mode=synchronous_mode)
         
         # # Initialize the LidarFaultInjector only if faults exist for this sensor
+        self.fault_injector = LidarFaultInjector()
         # if fault_config_file and has_fault_for_sensor(fault_config_file, "LidarSensor"):
         #     self.fault_injector = LidarFaultInjector(fault_config_file)
         # else:

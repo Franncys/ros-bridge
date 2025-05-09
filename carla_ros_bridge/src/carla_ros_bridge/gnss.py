@@ -57,6 +57,7 @@ class Gnss(Sensor):
         #     self.fault_injector = GNSSFaultInjector(fault_config_file)
         # else:
         #     self.fault_injector = None
+        self.fault_injector = GNSSFaultInjector()
 
         self.gnss_publisher = node.new_publisher(NavSatFix,
                                                  self.get_topic_prefix(),
