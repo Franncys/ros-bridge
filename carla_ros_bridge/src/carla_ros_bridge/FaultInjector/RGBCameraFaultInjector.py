@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 
 class RGBCameraFaultInjector(FaultInjector):
-    def __init__(self, config_file):
-        super().__init__(config_file, "RGBCamera")
+    def __init__(self, config_file=None):
+        super().__init__("RGBCamera", config_file)
 
     def apply_faults(self, sensor_data):
         """

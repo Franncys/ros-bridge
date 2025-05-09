@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from carla_ros_bridge.FaultInjector.gnss_data import GNSSData
 
 class FaultInjector(ABC):
-    def __init__(self, config_file, sensor_name):
+    def __init__(self, sensor_name, config_file=None):
         """
         Initialize the FaultInjector with faults specific to the given sensor.
 

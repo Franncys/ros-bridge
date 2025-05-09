@@ -4,8 +4,8 @@ from transforms3d.euler import euler2mat
 import math
 
 class IMUFaultInjector(FaultInjector):
-    def __init__(self, config_file):
-        super().__init__(config_file, "IMUSensor")
+    def __init__(self, config_file=None):
+        super().__init__("IMUSensor", config_file)
 
     def apply_faults(self, sensor_data):
         """

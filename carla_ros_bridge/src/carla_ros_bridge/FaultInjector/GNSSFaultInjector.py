@@ -1,8 +1,8 @@
 from carla_ros_bridge.FaultInjector.FaultInjector import FaultInjector
 
 class GNSSFaultInjector(FaultInjector):
-    def __init__(self, config_file):
-        super().__init__(config_file, "GNSSSensor")
+    def __init__(self, config_file=None):
+        super().__init__("GNSSSensor", config_file)
 
     def apply_faults(self, sensor_data):
         """

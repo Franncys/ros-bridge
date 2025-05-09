@@ -2,8 +2,8 @@ from carla_ros_bridge.FaultInjector.FaultInjector import FaultInjector
 import numpy as np
 
 class LidarFaultInjector(FaultInjector):
-    def __init__(self, config_file):
-        super().__init__(config_file, "LidarSensor")
+    def __init__(self, config_file=None):
+        super().__init__("LidarSensor", config_file,)
 
     def apply_faults(self, sensor_data):
         """
