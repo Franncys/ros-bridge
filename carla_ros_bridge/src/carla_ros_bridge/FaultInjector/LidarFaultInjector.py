@@ -20,6 +20,8 @@ class LidarFaultInjector(FaultInjector):
                     sensor_data = self._apply_noise(sensor_data, fault)
                 elif fault['failure_type'] == 'dropout':
                     sensor_data = self._apply_dropout(sensor_data, fault)
+                elif fault['name'] == 'zero_value':
+                    sensor_data = self._apply_zero_value(sensor_data, fault)
                 # Add more Lidar-specific fault types as needed
             
             # Log sensor data after applying faults
@@ -60,4 +62,15 @@ class LidarFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying dropout: {e}")
+            return sensor_data
+        
+    def _apply_zero_value(self, sensor_data, fault):
+        """
+        Simulate a "0 value" fault by clearing the LIDAR point cloud data.
+        """
+        try:
+            sensor_data['points'] = np.zeros_like(sensor_data['points'])
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying zero value fault: {e}")
             return sensor_data

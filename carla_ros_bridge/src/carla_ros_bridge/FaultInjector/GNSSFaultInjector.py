@@ -17,6 +17,8 @@ class GNSSFaultInjector(FaultInjector):
                     sensor_data = self._apply_bias(sensor_data, fault)
                 elif fault['failure_type'] == 'signal_loss':
                     sensor_data = self._apply_signal_loss(sensor_data, fault)
+                elif fault['failure_type'] == 'zero_value':
+                    sensor_data = self._apply_zero_value(sensor_data, fault)
                 # Add more GNSS-specific fault types as needed
             
             # Log sensor data after applying faults
@@ -46,3 +48,16 @@ class GNSSFaultInjector(FaultInjector):
         Simulate GNSS signal loss by dropping the data.
         """
         return None if fault.get('parameters', {}).get('signal_loss', True) else sensor_data
+    
+    def _apply_zero_value(self, sensor_data, fault):
+        """
+        Simulate a "0 value" fault by setting GNSS data to zero.
+        """
+        try:
+            sensor_data['latitude'] = 0.0
+            sensor_data['longitude'] = 0.0
+            sensor_data['altitude'] = 0.0
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying zero value fault: {e}")
+            return sensor_data

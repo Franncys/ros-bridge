@@ -26,6 +26,11 @@ class IMUFaultInjector(FaultInjector):
                     sensor_data = self._apply_dropout(sensor_data, fault)
                 elif fault['name'] == 'rotation':
                     sensor_data = self._apply_rotation(sensor_data, fault)
+                elif fault['name'] == 'zero_value':
+                    sensor_data = self._apply_zero_value(sensor_data, fault)
+                elif fault['name'] == 'velocity_reduction':
+                    sensor_data = self._apply_velocity_reduction(sensor_data, fault)
+            
                 # Log sensor data after applying faults
                 self.logger.info("IMU Sensor data after applying faults: %s", sensor_data)
                 return sensor_data    
@@ -91,4 +96,55 @@ class IMUFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying rotation: {e}")
+            return sensor_data
+        
+    def _apply_zero_value(self, sensor_data, fault):
+        """
+        Simulate a "0 value" fault by setting IMU data to zero.
+        """
+        try:
+            sensor_data.angular_velocity.x = 0.0
+            sensor_data.angular_velocity.y = 0.0
+            sensor_data.angular_velocity.z = 0.0
+            sensor_data.linear_acceleration.x = 0.0
+            sensor_data.linear_acceleration.y = 0.0
+            sensor_data.linear_acceleration.z = 0.0
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying zero value fault: {e}")
+            return sensor_data
+    
+    def _apply_velocity_reduction(self, sensor_data, fault):
+        """
+        Simulate reduced velocity by scaling down angular velocity and linear acceleration.
+
+        :param sensor_data: The IMU sensor data to modify.
+        :param fault: The fault configuration containing reduction parameters.
+        """
+        try:
+            # Get the reduction factor from the fault parameters (default to 0.5)
+            reduction_factor = fault.get('parameters', {}).get('reduction_factor', 0.5)
+            if not (0.0 < reduction_factor < 1.0):
+                raise ValueError("Reduction factor must be between 0 and 1.")
+
+            # Log the reduction being applied
+            self.logger.info(f"Applying velocity reduction with factor: {reduction_factor}")
+
+            # Scale down angular velocity
+            sensor_data.angular_velocity.x *= reduction_factor
+            sensor_data.angular_velocity.y *= reduction_factor
+            sensor_data.angular_velocity.z *= reduction_factor
+
+            # Scale down linear acceleration
+            sensor_data.linear_acceleration.x *= reduction_factor
+            sensor_data.linear_acceleration.y *= reduction_factor
+            sensor_data.linear_acceleration.z *= reduction_factor
+
+            # Log the modified sensor data
+            self.logger.info(f"Reduced angular velocity: {sensor_data.angular_velocity}")
+            self.logger.info(f"Reduced linear acceleration: {sensor_data.linear_acceleration}")
+
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying velocity reduction: {e}")
             return sensor_data
