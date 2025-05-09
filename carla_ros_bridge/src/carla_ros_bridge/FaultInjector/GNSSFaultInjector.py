@@ -9,15 +9,16 @@ class GNSSFaultInjector(FaultInjector):
         Apply GNSS-specific faults to the sensor data.
         """
         try:
-            for fault in self.active_faults:
+            for active_fault in self.active_faults:
+                fault = active_fault["fault"] 
                 # Log sensor data before applying faults
                 self.logger.info("GNSS Sensor data before applying faults: %s", sensor_data)
                 self.logger.info(f"Applying fault: {fault['name']} with parameters: {fault['parameters']}")
-                if fault['failure_type'] == 'bias':
+                if fault['name'] == 'bias':
                     sensor_data = self._apply_bias(sensor_data, fault)
-                elif fault['failure_type'] == 'signal_loss':
+                elif fault['name'] == 'signal_loss':
                     sensor_data = self._apply_signal_loss(sensor_data, fault)
-                elif fault['failure_type'] == 'zero_value':
+                elif fault['name'] == 'zero_value':
                     sensor_data = self._apply_zero_value(sensor_data, fault)
                 # Add more GNSS-specific fault types as needed
             

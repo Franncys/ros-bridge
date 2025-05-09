@@ -10,7 +10,8 @@ class LidarFaultInjector(FaultInjector):
         Apply Lidar-specific faults to the sensor data.
         """
         try:
-            for fault in self.active_faults:
+            for active_fault in self.active_faults:
+                fault = active_fault["fault"] 
                 # Log sensor data before applying faults
                 self.logger.info("Lidar Sensor data before applying faults: %s", sensor_data)
                 
