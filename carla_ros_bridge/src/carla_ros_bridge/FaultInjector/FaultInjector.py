@@ -148,7 +148,6 @@ class FaultInjector(ABC):
         :param config_file: Path to the fault configuration file.
         :type config_file: str
         """
-        config_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/' + config_file
         
         with open(config_file, 'r') as f:
             all_faults = json.load(f)
@@ -169,4 +168,7 @@ class FaultInjector(ABC):
         :type new_file: str
         """
         self.logger.info(f"Reloading faults from file: {new_file}")
+
+        new_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/' + new_file
+
         self._load_faults(new_file)
