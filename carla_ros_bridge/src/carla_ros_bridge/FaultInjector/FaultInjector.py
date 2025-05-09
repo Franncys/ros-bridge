@@ -69,6 +69,9 @@ class FaultInjector(ABC):
 
         # Check and trigger new faults
         for fault in self.faults:
+            self.logger.info("Checking Fault: ", fault)
+            self.logger.info("Fault Trigger: ", fault['trigger'])
+
             if self._is_triggered(fault, timestamp, carla_location):
                 self.active_faults.append({
                     "fault": fault,
