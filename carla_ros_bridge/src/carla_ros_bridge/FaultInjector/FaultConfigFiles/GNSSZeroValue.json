@@ -1,0 +1,19 @@
+[
+    {
+        "sensor": "GNSSSensor",
+        "faults": [
+            {
+                "name": "zero_value",
+                "trigger": {
+                    "location": {
+                        "x": 70.7,
+                        "y": 66.79,
+                        "z": 2.0
+                    }
+                },
+                "parameters": {},
+                "duration": 5
+            }
+        ]
+    }
+]
