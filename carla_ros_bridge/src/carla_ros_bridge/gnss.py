@@ -85,8 +85,8 @@ class Gnss(Sensor):
         navsatfix_msg.altitude = carla_gnss_measurement.altitude
 
         # # Apply fault injection if enabled
-        # if self.fault_injector:
-        #     navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
+        if self.fault_injector:
+            navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
 
         self.gnss_publisher.publish(navsatfix_msg)
 
