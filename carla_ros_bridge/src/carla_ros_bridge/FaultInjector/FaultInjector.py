@@ -69,8 +69,8 @@ class FaultInjector(ABC):
         # Check and trigger new faults
         for fault in self.faults:
             self.logger.info(f"Carla location: {carla_location} at timestamp {timestamp}.")
-            self.logger.info(f"Checking Fault: {json.dumps(fault, indent=2)}")  # Properly format fault details
-            self.logger.info(f"Fault Trigger: {json.dumps(fault.get('trigger', {}), indent=2)}")  # Properly format trigger details
+            #self.logger.info(f"Checking Fault: {json.dumps(fault, indent=2)}")  # Properly format fault details
+            #self.logger.info(f"Fault Trigger: {json.dumps(fault.get('trigger', {}), indent=2)}")  # Properly format trigger details
 
             if self._is_triggered(fault, timestamp, carla_location):
                 self.active_faults.append({
