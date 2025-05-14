@@ -36,9 +36,9 @@ class GNSSFaultInjector(FaultInjector):
         """
         try:
             bias = fault.get('parameters', {}).get('bias', {"latitude": 0.0, "longitude": 0.0, "altitude": 0.0})
-            sensor_data['latitude'] += bias['latitude']
-            sensor_data['longitude'] += bias['longitude']
-            sensor_data['altitude'] += bias['altitude']
+            sensor_data.latitude += bias['latitude']
+            sensor_data.longitude += bias['longitude']
+            sensor_data.altitude += bias['altitude']
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying bias: {e}")
