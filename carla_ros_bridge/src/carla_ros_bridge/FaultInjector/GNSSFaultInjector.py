@@ -55,9 +55,9 @@ class GNSSFaultInjector(FaultInjector):
         Simulate a "0 value" fault by setting GNSS data to zero.
         """
         try:
-            sensor_data['latitude'] = 0.0
-            sensor_data['longitude'] = 0.0
-            sensor_data['altitude'] = 0.0
+            sensor_data.latitude = 0.0
+            sensor_data.longitude = 0.0
+            sensor_data.altitude = 0.0
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying zero value fault: {e}")
