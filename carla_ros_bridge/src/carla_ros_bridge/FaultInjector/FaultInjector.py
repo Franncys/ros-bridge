@@ -120,7 +120,7 @@ class FaultInjector(ABC):
             return True
         return False
 
-    def _is_within_location(self, fault_location, current_location, tolerance=1.0):
+    def _is_within_location(self, fault_location, current_location, tolerance=0.5):
         """
         Check if the current Carla location is approximately within the fault trigger location.
 
