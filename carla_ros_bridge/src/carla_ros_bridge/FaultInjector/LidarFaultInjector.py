@@ -13,7 +13,7 @@ class LidarFaultInjector(FaultInjector):
             for active_fault in self.active_faults:
                 fault = active_fault["fault"] 
                 # Log sensor data before applying faults
-                self.logger.info("Lidar Sensor data before applying faults: %s", sensor_data)
+                #self.logger.info("Lidar Sensor data before applying faults: %s", sensor_data)
                 
                 self.logger.info(f"Applying fault: {fault['name']} with parameters: {fault['parameters']}")
                 
@@ -26,7 +26,7 @@ class LidarFaultInjector(FaultInjector):
                 # Add more Lidar-specific fault types as needed
             
             # Log sensor data after applying faults
-            self.logger.info("Lidar Sensor data after applying faults: %s", sensor_data)
+            #self.logger.info("Lidar Sensor data after applying faults: %s", sensor_data)
 
             return sensor_data
         except Exception as e:
@@ -71,9 +71,9 @@ class LidarFaultInjector(FaultInjector):
         """
         try:
             self.logger.info("Applying zero value fault to Lidar data.")
-            self.logger.info("Sensor data before applying zero value fault: %s", sensor_data)
+            #self.logger.info("Sensor data before applying zero value fault: %s", sensor_data)
             sensor_data['points'] = np.zeros_like(sensor_data['points'])
-            self.logger.info("Lidar Sensor data after applying zero value fault: %s", sensor_data)
+            #self.logger.info("Lidar Sensor data after applying zero value fault: %s", sensor_data)
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying zero value fault: {e}")
