@@ -1,3 +1,4 @@
+import numpy as np
 from carla_ros_bridge.FaultInjector.FaultInjector import FaultInjector
 from transforms3d.quaternions import quat2mat, mat2quat
 from transforms3d.euler import euler2mat
@@ -38,6 +39,32 @@ class IMUFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying faults to IMU data: {e}")
+            return sensor_data
+        
+    def _apply_noise(self, sensor_data, fault):
+        """
+        Add Gaussian noise to IMU angular velocity and linear acceleration.
+        """
+        try:
+            noise_stddev = fault.get('parameters', {}).get('noise_stddev', {
+                "x": 0.01,
+                "y": 0.01,
+                "z": 0.01
+            })
+
+            # Add noise to angular velocity
+            sensor_data.angular_velocity.x += np.random.normal(0, noise_stddev.get("x", 0.01))
+            sensor_data.angular_velocity.y += np.random.normal(0, noise_stddev.get("y", 0.01))
+            sensor_data.angular_velocity.z += np.random.normal(0, noise_stddev.get("z", 0.01))
+
+            # Add noise to linear acceleration
+            sensor_data.linear_acceleration.x += np.random.normal(0, noise_stddev.get("x", 0.01))
+            sensor_data.linear_acceleration.y += np.random.normal(0, noise_stddev.get("y", 0.01))
+            sensor_data.linear_acceleration.z += np.random.normal(0, noise_stddev.get("z", 0.01))
+
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying noise to IMU data: {e}")
             return sensor_data
 
     def _apply_rotation(self, sensor_data, fault):
