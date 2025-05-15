@@ -1,0 +1,25 @@
+[
+    {
+        "sensor": "IMUSensor",
+        "faults": [
+            {
+                "name": "noise",
+                "trigger": {
+                    "location": {
+                        "x": -21.0,
+                        "y": 66.0,
+                        "z": 2.0
+                    }
+                },
+                "parameters": {
+                    "noise_stddev": {
+                        "x": 0.1,
+                        "y": 0.1,
+                        "z": 0.1
+                    }
+                },
+                "duration": 10
+            }
+        ]
+    }
+]
