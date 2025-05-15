@@ -1,3 +1,4 @@
+import numpy as np
 from carla_ros_bridge.FaultInjector.FaultInjector import FaultInjector
 
 class GNSSFaultInjector(FaultInjector):
@@ -20,7 +21,8 @@ class GNSSFaultInjector(FaultInjector):
                     sensor_data = self._apply_signal_loss(sensor_data, fault)
                 elif fault['name'] == 'zero_value':
                     sensor_data = self._apply_zero_value(sensor_data, fault)
-                # Add more GNSS-specific fault types as needed
+                elif fault['name'] == 'noise':
+                    sensor_data = self._apply_noise(sensor_data, fault)
             
             # Log sensor data after applying faults
             #self.logger.info("GNSS Sensor data after applying faults: %s", sensor_data)
@@ -65,4 +67,23 @@ class GNSSFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying zero value fault: {e}")
+            return sensor_data
+    
+    def _apply_noise(self, sensor_data, fault):
+        """
+        Add Gaussian noise to GNSS latitude, longitude, and altitude.
+        """
+        try:
+            noise_stddev = fault.get('parameters', {}).get('noise_stddev', {
+                "latitude": 0.00002,
+                "longitude": 0.00002,
+                "altitude": 0.2
+            })
+            # Add noise to latitude, longitude, and altitude
+            sensor_data.latitude += np.random.normal(0, noise_stddev.get("latitude", 0.00002))
+            sensor_data.longitude += np.random.normal(0, noise_stddev.get("longitude", 0.00002))
+            sensor_data.altitude += np.random.normal(0, noise_stddev.get("altitude", 0.2))
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying noise to GNSS data: {e}")
             return sensor_data
