@@ -24,8 +24,8 @@ class GNSSFaultInjector(FaultInjector):
                 elif fault['name'] == 'noise':
                     sensor_data = self._apply_noise(sensor_data, fault)
             
-            # Log sensor data after applying faults
-            #self.logger.info("GNSS Sensor data after applying faults: %s", sensor_data)
+                # Log sensor data after applying faults
+                self.logger.info("GNSS Sensor data after applying faults: %s", sensor_data)
 
             return sensor_data
         except Exception as e:
