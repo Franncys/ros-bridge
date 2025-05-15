@@ -43,7 +43,12 @@ class LidarFaultInjector(FaultInjector):
             noise_level = fault.get('parameters', {}).get('noise_level', 0.1)
             point_cloud = np.array(sensor_data['points'])  # Assuming sensor_data['points'] is a numpy array
             noise = np.random.normal(0, noise_level, point_cloud.shape)
-            sensor_data['points'] = point_cloud + noise
+            noisy_points = point_cloud + noise
+            # Ensure correct types: x, y, z, intensity = float32; ring = uint16
+            if noisy_points.shape[1] == 5:
+                noisy_points[:, 0:4] = noisy_points[:, 0:4].astype(np.float32)
+                noisy_points[:, 4] = noisy_points[:, 4].astype(np.uint16)
+            sensor_data['points'] = noisy_points
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying noise: {e}")
