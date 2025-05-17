@@ -109,6 +109,10 @@ class Lidar(Sensor):
         lidar_data = numpy.hstack((lidar_data, ring))
         
         # Apply fault injection if enabled
+        if self.fault_injector and self.fault_injector.skip_message == True:
+            logger.warning("Skipping LiDAR message due to fault injection.")
+            return
+        
         if self.fault_injector:
             lidar_data = self.fault_injector.apply_faults({"points": lidar_data})["points"]
 

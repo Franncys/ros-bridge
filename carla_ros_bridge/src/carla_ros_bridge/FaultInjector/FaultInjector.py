@@ -29,6 +29,7 @@ class FaultInjector(ABC):
         self.logger.addHandler(file_handler)
 
         # Initialize faults
+        self.skip_message = False
         self.sensor_name = sensor_name
         self.faults = []
         self.active_faults = []
@@ -81,6 +82,7 @@ class FaultInjector(ABC):
 
         # Remove expired faults
         self._remove_expired_faults(timestamp)
+        self.update_skip_message_flag() 
 
     @abstractmethod
     def apply_faults(self, sensor_data):
@@ -89,6 +91,15 @@ class FaultInjector(ABC):
         Must be implemented by subclasses.
         """
         pass
+
+    def update_skip_message_flag(self):
+        """
+        Set skip_message to True if any active fault is a dropout/skip_message type, else False.
+        """
+        self.skip_message = any(
+            active_fault["fault"]["name"] in ["dropout", "skip_message", "signal_loss"]
+            for active_fault in self.active_faults
+        )
 
     def _remove_expired_faults(self, timestamp):
         """
