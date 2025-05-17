@@ -96,6 +96,11 @@ class ImuSensor(Sensor):
         imu_msg.orientation.y = quat[2]
         imu_msg.orientation.z = quat[3]
 
+        # Apply fault injection if enabled
+        if self.fault_injector and self.fault_injector.skip_message == True:
+            print("Skipping imu message due to fault injection.")
+            return
+
         # Apply fault injection
         if self.fault_injector:
             imu_msg = self.fault_injector.apply_faults(imu_msg)

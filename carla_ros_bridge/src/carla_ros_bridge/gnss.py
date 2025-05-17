@@ -84,6 +84,11 @@ class Gnss(Sensor):
         navsatfix_msg.longitude = carla_gnss_measurement.longitude
         navsatfix_msg.altitude = carla_gnss_measurement.altitude
 
+        # Apply fault injection if enabled
+        if self.fault_injector and self.fault_injector.skip_message == True:
+            print("Skipping GNSS message due to fault injection.")
+            return
+
         # # Apply fault injection if enabled
         if self.fault_injector:
             navsatfix_msg = self.fault_injector.apply_faults(navsatfix_msg)
