@@ -175,6 +175,7 @@ class FaultInjector(ABC):
 
         self.faults = []
         for fault_entry in all_faults:
+            print("Fault Sensor: ", fault_entry['sensor'])
             if fault_entry['sensor'] == self.sensor_name:
                 self.faults.extend(fault_entry['faults'])
 
@@ -192,7 +193,5 @@ class FaultInjector(ABC):
         # TO CHANGE FOR THE MOMENT THE FILE IS HARDCODED
         new_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/FaultConfigFiles/' + new_file
         
-        self.logger.info(f"Reloading faults from file: {new_file}")
         print("Reloading faults from file: ", new_file)
-
         self._load_faults(new_file)
