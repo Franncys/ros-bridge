@@ -1,0 +1,28 @@
+[
+    {
+        "sensor": "LidarSensor",
+        "faults": [
+            {
+                "name": "dropout",
+                "trigger": {
+                    "location": { "x": -21.0, "y": 63.0, "z": 2.0 }
+                },
+                "parameters": {},
+                "duration": 45
+            }
+        ]
+    },
+    {
+        "sensor": "GNSSSensor",
+        "faults": [
+            {
+                "name": "dropout",
+                "trigger": {
+                    "location": { "x": -21.0, "y": 63.0, "z": 2.0 }
+                },
+                "parameters": {},
+                "duration": 45
+            }
+        ]
+    }
+]
