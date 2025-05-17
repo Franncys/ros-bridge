@@ -1,0 +1,19 @@
+[
+    {
+        "sensor": "GNSSSensor",
+        "faults": [
+            {
+                "name": "dropout",
+                "trigger": {
+                    "location": {
+                        "x": 70.8,
+                        "y": 66.5,
+                        "z": 2.0
+                    }
+                },
+                "parameters": {},
+                "duration": 45
+            }
+        ]
+    }
+]
