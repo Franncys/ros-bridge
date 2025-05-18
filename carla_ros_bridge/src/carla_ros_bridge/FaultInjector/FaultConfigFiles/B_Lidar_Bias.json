@@ -1,0 +1,21 @@
+[
+    {
+        "sensor": "LidarSensor",
+        "faults": [
+            {
+                "name": "percentage_bias",
+                "trigger": {
+                    "location": {
+                        "x": -21.0,
+                        "y": 66.0,
+                        "z": 2.0
+                    }
+                },
+                "parameters": {
+                    "bias_percent": 50
+                },
+                "duration": 10
+            }
+        ]
+    }
+]

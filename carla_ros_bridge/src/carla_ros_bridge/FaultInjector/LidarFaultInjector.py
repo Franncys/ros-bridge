@@ -23,6 +23,8 @@ class LidarFaultInjector(FaultInjector):
                     sensor_data = self._apply_dropout(sensor_data, fault)
                 elif fault['name'] == 'zero_value':
                     sensor_data = self._apply_zero_value(sensor_data, fault)
+                elif fault['name'] == 'percentage_bias':
+                    sensor_data = self._apply_percentage_bias(sensor_data, fault)
                 # Add more Lidar-specific fault types as needed
             
             # Log sensor data after applying faults
@@ -82,4 +84,31 @@ class LidarFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying zero value fault: {e}")
+            return sensor_data
+    
+    def _apply_percentage_bias(self, sensor_data, fault):
+        """
+        Apply a percentage bias to the distance of each LiDAR point.
+        """
+        try:
+            bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
+            if bias_percent == 0:
+                return sensor_data
+            points = sensor_data['points']
+            # Compute distances from origin
+            distances = np.linalg.norm(points[:, :3], axis=1)
+            # Scale distances by (1 + bias_percent/100)
+            scale = 1 + bias_percent / 100.0
+            new_distances = distances * scale
+            # Avoid division by zero
+            with np.errstate(divide='ignore', invalid='ignore'):
+                factors = np.where(distances != 0, new_distances / distances, 1.0)
+            # Scale x, y, z
+            points[:, 0] *= factors
+            points[:, 1] *= factors
+            points[:, 2] *= factors
+            sensor_data['points'] = points
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying percentage bias: {e}")
             return sensor_data
