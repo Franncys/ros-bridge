@@ -92,11 +92,10 @@ class LidarFaultInjector(FaultInjector):
         """
         try:
             self.logger.info("Applying percentage bias fault to Lidar data.")
-            self.logger.info("Sensor data before applying percentage bias fault: %s", sensor_data)
             bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
             if bias_percent == 0:
                 return sensor_data
-            points = sensor_data['points']
+            points = np.array(sensor_data['points'], dtype=np.float32)
             # Compute distances from origin
             distances = np.linalg.norm(points[:, :3], axis=1)
             # Scale distances by (1 + bias_percent/100)
@@ -109,6 +108,10 @@ class LidarFaultInjector(FaultInjector):
             points[:, 0] *= factors
             points[:, 1] *= factors
             points[:, 2] *= factors
+            # Restore correct types: x, y, z, intensity = float32; ring = uint16
+            if points.shape[1] == 5:
+                points[:, 0:4] = points[:, 0:4].astype(np.float32)
+                points[:, 4] = points[:, 4].astype(np.uint16)
             sensor_data['points'] = points
             self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
             return sensor_data
