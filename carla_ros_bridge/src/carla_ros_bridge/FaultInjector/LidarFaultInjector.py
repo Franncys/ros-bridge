@@ -19,8 +19,8 @@ class LidarFaultInjector(FaultInjector):
                 
                 if fault['name'] == 'noise':
                     sensor_data = self._apply_noise(sensor_data, fault)
-                elif fault['name'] == 'dropout':
-                    sensor_data = self._apply_dropout(sensor_data, fault)
+                # elif fault['name'] == 'dropout':
+                #     sensor_data = self._apply_dropout(sensor_data, fault)
                 elif fault['name'] == 'zero_value':
                     sensor_data = self._apply_zero_value(sensor_data, fault)
                 elif fault['name'] == 'percentage_bias':
@@ -109,10 +109,16 @@ class LidarFaultInjector(FaultInjector):
             points[:, 1] *= factors
             points[:, 2] *= factors
             # Restore correct types: x, y, z, intensity = float32; ring = uint16
+            points = sensor_data['points']
             if points.shape[1] == 5:
-                points[:, 0:4] = points[:, 0:4].astype(np.float32)
-                points[:, 4] = points[:, 4].astype(np.uint16)
-            sensor_data['points'] = points
+                # Ensure correct types for each field
+                points_for_ros = [
+                    (float(x), float(y), float(z), float(intensity), int(ring))
+                    for x, y, z, intensity, ring in points
+                ]
+            else:
+                points_for_ros = points.tolist()
+            sensor_data['points'] = points_for_ros
             self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
             return sensor_data
         except Exception as e:
