@@ -91,6 +91,8 @@ class LidarFaultInjector(FaultInjector):
         Apply a percentage bias to the distance of each LiDAR point.
         """
         try:
+            self.logger.info("Applying percentage bias fault to Lidar data.")
+            self.logger.info("Sensor data before applying percentage bias fault: %s", sensor_data)
             bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
             if bias_percent == 0:
                 return sensor_data
@@ -108,6 +110,7 @@ class LidarFaultInjector(FaultInjector):
             points[:, 1] *= factors
             points[:, 2] *= factors
             sensor_data['points'] = points
+            self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying percentage bias: {e}")
