@@ -95,7 +95,7 @@ class LidarFaultInjector(FaultInjector):
             bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
             if bias_percent == 0:
                 return sensor_data
-            points = np.array(sensor_data['points'])
+            points = np.array(sensor_data['points'], dtype=np.float32)
             # Compute distances from origin
             distances = np.linalg.norm(points[:, :3], axis=1)
             # Scale distances by (1 + bias_percent/100)
@@ -109,7 +109,7 @@ class LidarFaultInjector(FaultInjector):
             points[:, 1] *= factors
             points[:, 2] *= factors
             # Restore correct types: x, y, z, intensity = float32; ring = uint16
-            #log shape of points
+            #log shape
             self.logger.info(f"Points shape: {points.shape}")
             if points.shape[1] == 5:
                 points[:, 0:4] = points[:, 0:4].astype(np.float32)
