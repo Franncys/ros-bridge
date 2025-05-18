@@ -174,6 +174,8 @@ class FaultInjector(ABC):
             all_faults = json.load(f)
 
         self.faults = []
+        self.active_faults = []
+        self.skip_message = False
         for fault_entry in all_faults:
             print("Fault Sensor: ", fault_entry['sensor'])
             if fault_entry['sensor'] == self.sensor_name:
