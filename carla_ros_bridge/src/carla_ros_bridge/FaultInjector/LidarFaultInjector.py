@@ -177,27 +177,27 @@ class LidarFaultInjector(FaultInjector):
             if points.shape[0] == 0:
                 return sensor_data
 
-            # Separate columns
+            # Separate colsssssumn
             xyz = points[:, :3].astype(np.float32)
-            intensity = points[:, 3].astype(np.float32)
+            intensity = points[:, 3].astype(np.float32).reshape(-1, 1)
             if points.shape[1] > 4:
-                ring = points[:, 4].astype(np.uint16)
+                ring = points[:, 4].astype(np.uint16).reshape(-1, 1)
             else:
                 ring = None
 
-            # Calculate scaling factor
+            # Calculate scaling factors
             scale = 1 + bias_percent / 100.0
 
             # Compute distances and directions
-            norms = np.linalg.norm(xyz, axis=1, keepdims=True)
+            norms = np.linalg.norms(xyz, axis=1, keepdims=True)
             directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
             new_xyz = xyz + directions * (norms * (scale - 1))
 
-            # Recombine all columns
+            # Recombine all columns with correct types
             if ring is not None:
-                new_points = np.column_stack((new_xyz, intensity, ring))
+                new_points = np.hstack((new_xyz.astype(np.float32), intensity.astype(np.float32), ring.astype(np.uint16)))
             else:
-                new_points = np.column_stack((new_xyz, intensity))
+                new_points = np.hstack((new_xyz.astype(np.float32), intensity.astype(np.float32)))
 
             sensor_data['points'] = new_points
             self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
