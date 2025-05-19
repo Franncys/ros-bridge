@@ -189,7 +189,7 @@ class LidarFaultInjector(FaultInjector):
             scale = 1 + bias_percent / 100.0
 
             # Compute distances and directions
-            norms = np.linalg.norms(xyz, axis=1, keepdims=True)
+            norms = np.linalg.norm(xyz, axis=1, keepdims=True)
             directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
             new_xyz = xyz + directions * (norms * (scale - 1))
 
