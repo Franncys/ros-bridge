@@ -130,8 +130,8 @@ class LidarFaultInjector(FaultInjector):
             if bias_percent == 0:
                 return sensor_data
 
-            points = np.array(sensor_data['points'])
-            # Only operate if there are points
+            # Ensure points is a proper float32 NumPy array
+            points = np.array(sensor_data['points'], dtype=np.float32)
             if points.shape[0] == 0:
                 return sensor_data
 
