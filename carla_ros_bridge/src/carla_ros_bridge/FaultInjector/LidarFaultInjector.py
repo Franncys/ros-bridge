@@ -246,7 +246,7 @@ class LidarFaultInjector(FaultInjector):
 
             # You can load these from ROS params or fault config instead of hard‐coding
             bx = 1.0  # e.g. self.bias_x = rospy.get_param('~bias_x', 0.1)
-            by = 0.2
+            by = 1.0
             bz = 0.0
 
             # Build mask of points != (0,0,0)
