@@ -165,19 +165,16 @@ class LidarFaultInjector(FaultInjector):
         
     def _apply_percentage_bias(self, sensor_data, fault):
         """
-        Apply a percentage bias to the distance of each LiDAR point.
+        Add a fixed distance (e.g., 10 meters) to the distance of each LiDAR point.
         """
         try:
-            self.logger.info("Applying percentage bias fault to Lidar data.")
-            bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
-            if bias_percent == 0:
-                return sensor_data
+            self.logger.info("Applying fixed distance bias (+10m) to Lidar data.")
 
             points = np.asarray(sensor_data['points'])
             if points.shape[0] == 0:
                 return sensor_data
 
-            # Separate colsssssumn
+            # Separate columns
             xyz = points[:, :3].astype(np.float32)
             intensity = points[:, 3].astype(np.float32).reshape(-1, 1)
             if points.shape[1] > 4:
@@ -185,23 +182,20 @@ class LidarFaultInjector(FaultInjector):
             else:
                 ring = None
 
-            # Calculate scaling factors
-            scale = 1 + bias_percent / 100.0
-
             # Compute distances and directions
             norms = np.linalg.norm(xyz, axis=1, keepdims=True)
             directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
-            new_xyz = xyz + directions * (norms * (scale - 1))
+            new_xyz = xyz + directions * 10.0  # Add 10 meters outward
 
             # Recombine all columns with correct types
             if ring is not None:
-                new_points = np.hstack((new_xyz.astype(np.float32), intensity.astype(np.float32), ring.astype(np.uint16)))
+                new_points = np.hstack((new_xyz, intensity, ring))
             else:
-                new_points = np.hstack((new_xyz.astype(np.float32), intensity.astype(np.float32)))
+                new_points = np.hstack((new_xyz, intensity))
 
             sensor_data['points'] = new_points
-            self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
+            self.logger.info("Lidar Sensor data after applying fixed bias: %s", sensor_data)
             return sensor_data
         except Exception as e:
-            self.logger.error(f"Error applying percentage bias: {e}")
+            self.logger.error(f"Error applying fixed bias: {e}")
             return sensor_data
