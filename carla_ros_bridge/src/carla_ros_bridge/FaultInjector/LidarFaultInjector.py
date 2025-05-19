@@ -185,7 +185,7 @@ class LidarFaultInjector(FaultInjector):
             # Compute distances and directions
             norms = np.linalg.norm(xyz, axis=1, keepdims=True)
             directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
-            new_xyz = xyz + directions * 10.0  # Add 10 meters outward
+            new_xyz = xyz + directions * 2.0  # Add 10 meters outward
 
             # Recombine all columns with correct types
             if ring is not None:
