@@ -120,6 +120,49 @@ class LidarFaultInjector(FaultInjector):
     #     except Exception as e:
     #         self.logger.error(f"Error applying percentage bias: {e}")
     #         return sensor_data
+    
+    #def _apply_percentage_bias(self, sensor_data, fault):
+    #    """
+    #    Apply a percentage bias to the distance of each LiDAR point.
+    #    """
+    #    try:
+    #        self.logger.info("Applying percentage bias fault to Lidar data.")
+    #        bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
+    #        if bias_percent == 0:
+    #            return sensor_data
+
+    #        # Ensure points is a proper float32 NumPy array
+    #        points = np.array(sensor_data['points'], dtype=np.float32)
+    #        if points.shape[0] == 0:
+    #            return sensor_data
+
+    #        # Calculate scaling factor
+    #        scale = 1 + bias_percent / 100.0
+
+    #        # Scale only x, y, z
+    #        xyz = points[:, :3]
+    #        # Compute distances and directions
+    #        norms = np.linalg.norm(xyz, axis=1, keepdims=True)
+    #        # Avoid division by zero
+    #        directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms!=0)
+    #        new_xyz = xyz + directions * (norms * (scale - 1))
+
+    #        # Build new points array
+    #        new_points = np.copy(points)
+    #        new_points[:, :3] = new_xyz
+
+    #        # Ensure correct types: x, y, z, intensity = float32; ring = uint16
+    #        if new_points.shape[1] == 5:
+    #            new_points[:, 0:4] = new_points[:, 0:4].astype(np.float32)
+    #            new_points[:, 4] = new_points[:, 4].astype(np.uint16)
+
+    #        sensor_data['points'] = new_points
+    #        self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
+    #        return sensor_data
+    #    except Exception as e:
+    #        self.logger.error(f"Error applying percentage bias: {e}")
+    #        return sensor_data
+        
     def _apply_percentage_bias(self, sensor_data, fault):
         """
         Apply a percentage bias to the distance of each LiDAR point.
@@ -130,30 +173,31 @@ class LidarFaultInjector(FaultInjector):
             if bias_percent == 0:
                 return sensor_data
 
-            # Ensure points is a proper float32 NumPy array
-            points = np.array(sensor_data['points'], dtype=np.float32)
+            points = np.asarray(sensor_data['points'])
             if points.shape[0] == 0:
                 return sensor_data
+
+            # Separate columns
+            xyz = points[:, :3].astype(np.float32)
+            intensity = points[:, 3].astype(np.float32)
+            if points.shape[1] > 4:
+                ring = points[:, 4].astype(np.uint16)
+            else:
+                ring = None
 
             # Calculate scaling factor
             scale = 1 + bias_percent / 100.0
 
-            # Scale only x, y, z
-            xyz = points[:, :3]
             # Compute distances and directions
             norms = np.linalg.norm(xyz, axis=1, keepdims=True)
-            # Avoid division by zero
-            directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms!=0)
+            directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
             new_xyz = xyz + directions * (norms * (scale - 1))
 
-            # Build new points array
-            new_points = np.copy(points)
-            new_points[:, :3] = new_xyz
-
-            # Ensure correct types: x, y, z, intensity = float32; ring = uint16
-            if new_points.shape[1] == 5:
-                new_points[:, 0:4] = new_points[:, 0:4].astype(np.float32)
-                new_points[:, 4] = new_points[:, 4].astype(np.uint16)
+            # Recombine all columns
+            if ring is not None:
+                new_points = np.column_stack((new_xyz, intensity, ring))
+            else:
+                new_points = np.column_stack((new_xyz, intensity))
 
             sensor_data['points'] = new_points
             self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
