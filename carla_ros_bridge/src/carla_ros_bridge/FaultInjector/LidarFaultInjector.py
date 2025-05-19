@@ -189,7 +189,7 @@ class LidarFaultInjector(FaultInjector):
             # Only add 10 meters to points not at the origin
             add_mask = (norms != 0)
             new_xyz = np.copy(xyz)
-            new_xyz[add_mask[:, 0]] += directions[add_mask[:, 0]] * 5.0
+            new_xyz[add_mask[:, 0]] += directions[add_mask[:, 0]] * 2.0
 
             # Recombine all columns with correct types
             if ring is not None:
