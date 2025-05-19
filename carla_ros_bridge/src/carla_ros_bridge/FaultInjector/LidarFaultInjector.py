@@ -163,7 +163,7 @@ class LidarFaultInjector(FaultInjector):
     #        self.logger.error(f"Error applying percentage bias: {e}")
     #        return sensor_data
         
-    def _apply__percentage_bias(self, sensor_data, fault):
+    def _apply___percentage_bias(self, sensor_data, fault):
         """
         Add a fixed distance (e.g., 10 meters) to the distance of each LiDAR point.
         """
@@ -204,7 +204,7 @@ class LidarFaultInjector(FaultInjector):
             self.logger.error(f"Error applying fixed bias: {e}")
             return sensor_data
         
-    def _apply_percentage_bias(self, sensor_data, fault):
+    def _apply__percentage_bias(self, sensor_data, fault):
         """
         Add a fixed XYZ bias to each LiDAR point.
         """
@@ -227,6 +227,45 @@ class LidarFaultInjector(FaultInjector):
 
             sensor_data['points'] = points
             self.logger.info("LiDAR data after applying fixed bias: %s", sensor_data)
+            return sensor_data
+
+        except Exception as e:
+            self.logger.error(f"Error applying fixed bias: {e}")
+            return sensor_data
+
+    def _apply_percentage_bias(self, sensor_data, fault):
+        """
+        Add a fixed XYZ bias to each LiDAR point, but only if the point is not at (0,0,0).
+        """
+        try:
+            self.logger.info("Applying fixed XYZ bias to LiDAR data.")
+
+            points = np.asarray(sensor_data['points'], dtype=np.float32)
+            if points.size == 0:
+                return sensor_data
+
+            # You can load these from ROS params or fault config instead of hard‐coding
+            bx = 0.1  # e.g. self.bias_x = rospy.get_param('~bias_x', 0.1)
+            by = 0.02
+            bz = 0.2
+
+            # Build mask of points != (0,0,0)
+            non_zero_mask = ~(
+                (points[:, 0] == 0.0) &
+                (points[:, 1] == 0.0) &
+                (points[:, 2] == 0.0)
+            )
+
+            # Apply the bias only to those points
+            points[non_zero_mask, 0] += bx
+            points[non_zero_mask, 1] += by
+            points[non_zero_mask, 2] += bz
+
+            sensor_data['points'] = points
+            self.logger.info(
+                "LiDAR data after applying fixed bias to %d/%d points.",
+                non_zero_mask.sum(), points.shape[0]
+            )
             return sensor_data
 
         except Exception as e:
