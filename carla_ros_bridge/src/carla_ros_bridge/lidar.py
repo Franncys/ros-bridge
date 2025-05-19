@@ -119,7 +119,17 @@ class Lidar(Sensor):
         # we take the opposite of y axis
         # (as lidar point are express in left handed coordinate system, and ros need right handed)
         lidar_data[:, 1] *= -1
-        point_cloud_msg = create_cloud(header, fields, lidar_data)
+
+        # Now convert to list of tuples for create_cloud
+        if lidar_data.shape[1] == 5:
+            points_for_ros = [
+                (float(x), float(y), float(z), float(intensity), int(ring))
+                for x, y, z, intensity, ring in lidar_data
+            ]
+        else:
+            points_for_ros = lidar_data.tolist()
+
+        point_cloud_msg = create_cloud(header, fields, points_for_ros)
         self.lidar_publisher.publish(point_cloud_msg)
 
         # Log the LiDAR data
