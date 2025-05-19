@@ -155,7 +155,15 @@ class LidarFaultInjector(FaultInjector):
                 new_points[:, 0:4] = new_points[:, 0:4].astype(np.float32)
                 new_points[:, 4] = new_points[:, 4].astype(np.uint16)
 
-            sensor_data['points'] = new_points
+            if new_points.shape[1] == 5:
+                points_for_ros = [
+                    (float(x), float(y), float(z), float(intensity), int(ring))
+                    for x, y, z, intensity, ring in points
+                ]
+            else:
+                points_for_ros = points.tolist()
+
+            sensor_data['points'] = points_for_ros
             self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
             return sensor_data
         except Exception as e:
