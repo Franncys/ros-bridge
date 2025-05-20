@@ -233,7 +233,7 @@ class LidarFaultInjector(FaultInjector):
             self.logger.error(f"Error applying fixed bias: {e}")
             return sensor_data
 
-    def _apply_percentage_bias(self, sensor_data, fault):
+    def _applyy_percentage_bias(self, sensor_data, fault):
         """
         Add a fixed XYZ bias to each LiDAR point, but only if the point is not at (0,0,0).
         """
@@ -271,3 +271,46 @@ class LidarFaultInjector(FaultInjector):
         except Exception as e:
             self.logger.error(f"Error applying fixed bias: {e}")
             return sensor_data
+    
+    def _apply_percentage_bias(self, sensor_data, fault):
+        """
+        Add a fixed XYZ bias to each LiDAR point, but only on axes
+        where the original coordinate isn’t zero.
+        """
+        try:
+            self.logger.info("Applying fixed XYZ bias to LiDAR data (per-axis masking).")
+
+            # Grab a float32 view of your points
+            points = np.asarray(sensor_data['points'], dtype=np.float32)
+            if points.size == 0:
+                return sensor_data
+
+            # Your biases (e.g. loaded in __init__ via rosparam)
+            bx = 1.0
+            by = 1.0
+            bz = 0.0
+
+            # If you see near-zero values instead of exact zeros, swap in:
+            # tol = 1e-6
+            # mask_x = np.abs(points[:,0]) > tol
+            # etc.
+            mask_x = points[:, 0] != 0.0
+            mask_y = points[:, 1] != 0.0
+            mask_z = points[:, 2] != 0.0
+
+            # Shift each axis only where mask is True
+            points[mask_x, 0] += bx
+            points[mask_y, 1] += by
+            points[mask_z, 2] += bz
+
+            sensor_data['points'] = points
+            self.logger.info(
+                "Applied fixed bias to axes: x(%d), y(%d), z(%d) of %d points",
+                mask_x.sum(), mask_y.sum(), mask_z.sum(), points.shape[0]
+            )
+            return sensor_data
+
+        except Exception as e:
+            self.logger.error(f"Error applying fixed bias: {e}")
+            return sensor_data
+
