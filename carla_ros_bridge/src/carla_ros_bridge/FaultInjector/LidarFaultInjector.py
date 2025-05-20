@@ -286,8 +286,8 @@ class LidarFaultInjector(FaultInjector):
                 return sensor_data
 
             # Your biases (e.g. loaded in __init__ via rosparam)
-            bx = 1.0
-            by = 1.0
+            bx = 0.5
+            by = 0.5
             bz = 0.0
 
             # If you see near-zero values instead of exact zeros, swap in:
