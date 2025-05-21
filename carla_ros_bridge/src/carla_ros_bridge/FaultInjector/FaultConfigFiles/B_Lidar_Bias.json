@@ -13,6 +13,7 @@
                 },
                 "parameters": {
                     "bias_percent": 1.0,
+                    "filter_ego_vehicle": true,
                     "vehicle_box": {
                         "length": 6.5,
                         "width": 3.5,

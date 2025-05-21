@@ -356,7 +356,10 @@ class LidarFaultInjector(FaultInjector):
                 return sensor_data
             
             #points = self.filter_nearby_points(points, min_radius=1.8)
-            points = self.filter_ego_vehicle_points(points, fault)
+            filter_ego = fault.get('parameters', {}).get('filter_ego_vehicle', True)
+            if filter_ego:
+                points = self.filter_ego_vehicle_points(points, fault)
+            
             bias_distance = fault.get('parameters', {}).get('bias_percent', 0.5)
 
             xyz = points[:, :3]
