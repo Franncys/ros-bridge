@@ -356,7 +356,7 @@ class LidarFaultInjector(FaultInjector):
                 return sensor_data
             
             #points = self.filter_nearby_points(points, min_radius=1.8)
-            points = self.filter_ego_vehicle_points(points)
+            points = self.filter_ego_vehicle_points(points, fault)
             bias_distance = fault.get('parameters', {}).get('bias_percent', 0.5)
 
             xyz = points[:, :3]
@@ -388,7 +388,7 @@ class LidarFaultInjector(FaultInjector):
         mask = dists > min_radius
         return points[mask]
     
-    def filter_ego_vehicle_points(self, points):
+    def filter_ego_vehicle_points(self, points, fault=None):
         """
         Remove points inside the ego vehicle bounding box using vehicle parameters.
         """
@@ -396,6 +396,11 @@ class LidarFaultInjector(FaultInjector):
         # length = 2.544 + 1.12 + 0.82  # 4.484
         # width = 1.45 + 0.18 + 0.18    # 1.81
         # height = 2.40
+        # Get vehicle box from fault parameters, or use defaults
+        box = fault.get('parameters', {}).get('vehicle_box', {})
+        length = box.get('length', 4.484)
+        width = box.get('width', 1.81)
+        height = box.get('height', 2.40)
 
         length = 5.5  # 4.484
         width = 2.5    # 1.81

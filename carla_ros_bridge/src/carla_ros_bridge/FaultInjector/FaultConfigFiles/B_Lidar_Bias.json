@@ -12,7 +12,12 @@
                     }
                 },
                 "parameters": {
-                    "bias_percent": 1.0
+                    "bias_percent": 1.0,
+                    "vehicle_box": {
+                        "length": 6.5,
+                        "width": 3.5,
+                        "height": 4.5
+                    }
                 },
                 "duration": 45
             }
