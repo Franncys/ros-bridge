@@ -86,263 +86,6 @@ class LidarFaultInjector(FaultInjector):
             self.logger.error(f"Error applying zero value fault: {e}")
             return sensor_data
     
-    # def _apply_percentage_bias(self, sensor_data, fault):
-    #     """
-    #     Apply a percentage bias to the distance of each LiDAR point.
-    #     """
-    #     try:
-    #         self.logger.info("Applying percentage bias fault to Lidar data.")
-    #         bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
-    #         if bias_percent == 0:
-    #             return sensor_data
-    #         points = np.array(sensor_data['points'], dtype=np.float32)
-    #         # Compute distances from origin
-    #         distances = np.linalg.norm(points[:, :3], axis=1)
-    #         # Scale distances by (1 + bias_percent/100)
-    #         scale = 1 + bias_percent / 100.0
-    #         new_distances = distances * scale
-    #         # Avoid division by zero
-    #         with np.errstate(divide='ignore', invalid='ignore'):
-    #             factors = np.where(distances != 0, new_distances / distances, 1.0)
-    #         # Scale x, y, z
-    #         points[:, 0] *= factors
-    #         points[:, 1] *= factors
-    #         points[:, 2] *= factors
-    #         # Restore correct types: x, y, z, intensity = float32; ring = uint16
-    #         #log shape
-    #         self.logger.info(f"Points shape: {points.shape}")
-    #         if points.shape[1] == 5:
-    #             points[:, 0:4] = points[:, 0:4].astype(np.float32)
-    #             points[:, 4] = points[:, 4].astype(np.uint16)
-    #         sensor_data['points'] = points
-    #         self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
-    #         return sensor_data
-    #     except Exception as e:
-    #         self.logger.error(f"Error applying percentage bias: {e}")
-    #         return sensor_data
-    
-    #def _apply_percentage_bias(self, sensor_data, fault):
-    #    """
-    #    Apply a percentage bias to the distance of each LiDAR point.
-    #    """
-    #    try:
-    #        self.logger.info("Applying percentage bias fault to Lidar data.")
-    #        bias_percent = fault.get('parameters', {}).get('bias_percent', 0)
-    #        if bias_percent == 0:
-    #            return sensor_data
-
-    #        # Ensure points is a proper float32 NumPy array
-    #        points = np.array(sensor_data['points'], dtype=np.float32)
-    #        if points.shape[0] == 0:
-    #            return sensor_data
-
-    #        # Calculate scaling factor
-    #        scale = 1 + bias_percent / 100.0
-
-    #        # Scale only x, y, z
-    #        xyz = points[:, :3]
-    #        # Compute distances and directions
-    #        norms = np.linalg.norm(xyz, axis=1, keepdims=True)
-    #        # Avoid division by zero
-    #        directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms!=0)
-    #        new_xyz = xyz + directions * (norms * (scale - 1))
-
-    #        # Build new points array
-    #        new_points = np.copy(points)
-    #        new_points[:, :3] = new_xyz
-
-    #        # Ensure correct types: x, y, z, intensity = float32; ring = uint16
-    #        if new_points.shape[1] == 5:
-    #            new_points[:, 0:4] = new_points[:, 0:4].astype(np.float32)
-    #            new_points[:, 4] = new_points[:, 4].astype(np.uint16)
-
-    #        sensor_data['points'] = new_points
-    #        self.logger.info("Lidar Sensor data after applying percentage bias fault: %s", sensor_data)
-    #        return sensor_data
-    #    except Exception as e:
-    #        self.logger.error(f"Error applying percentage bias: {e}")
-    #        return sensor_data
-        
-    def _apply___percentage_bias(self, sensor_data, fault):
-        """
-        Add a fixed distance (e.g., 10 meters) to the distance of each LiDAR point.
-        """
-        try:
-            self.logger.info("Applying fixed distance bias (+10m) to Lidar data.")
-
-            points = np.asarray(sensor_data['points'])
-            if points.shape[0] == 0:
-                return sensor_data
-
-            # Separate columns
-            xyz = points[:, :3].astype(np.float32)
-            intensity = points[:, 3].astype(np.float32).reshape(-1, 1)
-            if points.shape[1] > 4:
-                ring = points[:, 4].astype(np.uint16).reshape(-1, 1)
-            else:
-                ring = None
-
-            # Compute distances and directions
-            norms = np.linalg.norm(xyz, axis=1, keepdims=True)
-            directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
-            
-            # Only add 10 meters to points not at the origin
-            add_mask = (norms != 0)
-            new_xyz = np.copy(xyz)
-            new_xyz[add_mask[:, 0]] += directions[add_mask[:, 0]] + 3.0
-
-            # Recombine all columns with correct types
-            if ring is not None:
-                new_points = np.hstack((new_xyz, intensity, ring))
-            else:
-                new_points = np.hstack((new_xyz, intensity))
-
-            sensor_data['points'] = new_points
-            self.logger.info("Lidar Sensor data after applying fixed bias: %s", sensor_data)
-            return sensor_data
-        except Exception as e:
-            self.logger.error(f"Error applying fixed bias: {e}")
-            return sensor_data
-        
-    def _apply__percentage_bias(self, sensor_data, fault):
-        """
-        Add a fixed XYZ bias to each LiDAR point.
-        """
-        try:
-            self.logger.info("Applying fixed XYZ bias to LiDAR data.")
-
-            points = np.asarray(sensor_data['points'], dtype=np.float32)
-            if points.size == 0:
-                return sensor_data
-
-            # You can load these from ROS params or fault config instead of hard‐coding
-            bx = 0.1  # e.g. self.bias_x = rospy.get_param('~bias_x', 0.1)
-            by = 0.02
-            bz = 0.2
-
-            # Apply the bias directly to x,y,z columns
-            points[:, 0] += bx
-            points[:, 1] += by
-            points[:, 2] += bz
-
-            sensor_data['points'] = points
-            self.logger.info("LiDAR data after applying fixed bias: %s", sensor_data)
-            return sensor_data
-
-        except Exception as e:
-            self.logger.error(f"Error applying fixed bias: {e}")
-            return sensor_data
-
-    def _applyy_percentage_bias(self, sensor_data, fault):
-        """
-        Add a fixed XYZ bias to each LiDAR point, but only if the point is not at (0,0,0).
-        """
-        try:
-            self.logger.info("Applying fixed XYZ bias to LiDAR data.")
-
-            points = np.asarray(sensor_data['points'], dtype=np.float32)
-            if points.size == 0:
-                return sensor_data
-
-            # You can load these from ROS params or fault config instead of hard‐coding
-            bx = 0.1  # e.g. self.bias_x = rospy.get_param('~bias_x', 0.1)
-            by = 0.1
-            bz = 0.0
-
-            # Build mask of points != (0,0,0)
-            non_zero_mask = ~(
-                (points[:, 0] == 0.0) &
-                (points[:, 1] == 0.0) &
-                (points[:, 2] == 0.0)
-            )
-
-            # Apply the bias only to those points
-            points[non_zero_mask, 0] += bx
-            points[non_zero_mask, 1] += by
-            points[non_zero_mask, 2] += bz
-
-            sensor_data['points'] = points
-            self.logger.info(
-                "LiDAR data after applying fixed bias to %d/%d points.",
-                non_zero_mask.sum(), points.shape[0]
-            )
-            return sensor_data
-
-        except Exception as e:
-            self.logger.error(f"Error applying fixed bias: {e}")
-            return sensor_data
-    
-    def _apply_percentage_bias(self, sensor_data, fault):
-        """
-        Add a fixed XYZ bias to each LiDAR point, but only on axes
-        where the original coordinate isn’t zero.
-        """
-        try:
-            self.logger.info("Applying fixed XYZ bias to LiDAR data (per-axis masking).")
-
-            # Grab a float32 view of your points
-            points = np.asarray(sensor_data['points'], dtype=np.float32)
-            if points.size == 0:
-                return sensor_data
-
-            # Your biases (e.g. loaded in __init__ via rosparam)
-            bx = 0.5
-            by = 0.5
-            bz = 0.0
-
-            # If you see near-zero values instead of exact zeros, swap in:
-            # tol = 1e-6
-            # mask_x = np.abs(points[:,0]) > tol
-            # etc.
-            mask_x = points[:, 0] != 0.0
-            mask_y = points[:, 1] != 0.0
-            mask_z = points[:, 2] != 0.0
-
-            # Shift each axis only where mask is True
-            points[mask_x, 0] += bx
-            points[mask_y, 1] += by
-            points[mask_z, 2] += bz
-
-            sensor_data['points'] = points
-            self.logger.info(
-                "Applied fixed bias to axes: x(%d), y(%d), z(%d) of %d points",
-                mask_x.sum(), mask_y.sum(), mask_z.sum(), points.shape[0]
-            )
-            return sensor_data
-
-        except Exception as e:
-            self.logger.error(f"Error applying fixed bias: {e}")
-            return sensor_data
-
-    # def _apply_distance_bias(self, sensor_data, fault):
-    #     """
-    #     Add a fixed distance (e.g., 10 meters) outward from the origin to each LiDAR point.
-    #     """
-    #     try:
-    #         self.logger.info("Applying distance bias to LiDAR points.")
-
-    #         points = np.asarray(sensor_data['points'], dtype=np.float32)
-    #         if points.size == 0:
-    #             return sensor_data
-
-    #         bias_distance = 2.0
-
-    #         xyz = points[:, :3]
-    #         norms = np.linalg.norm(xyz, axis=1, keepdims=True)
-    #         # Avoid division by zero
-    #         directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
-    #         # Only apply to points not at the origin
-    #         mask = (norms[:, 0] != 0)
-    #         xyz[mask] = xyz[mask] + directions[mask] * bias_distance
-
-    #         points[:, :3] = xyz
-    #         sensor_data['points'] = points
-    #         self.logger.info("Applied distance bias to %d points.", mask.sum())
-    #         return sensor_data
-    #     except Exception as e:
-    #         self.logger.error(f"Error applying distance bias: {e}")
-    #         return sensor_data
-
     def _apply_distance_bias(self, sensor_data, fault):
         """
         Add a fixed distance (e.g., 10 meters) outward from the origin to each LiDAR point,
@@ -395,7 +138,7 @@ class LidarFaultInjector(FaultInjector):
         """
         Remove points inside the ego vehicle bounding box using vehicle parameters.
         """
-        # Vehicle dimensions gotten from config
+        # Vehicle dimensions gotten from config on Autoware
         # length = 2.544 + 1.12 + 0.82  # 4.484
         # width = 1.45 + 0.18 + 0.18    # 1.81
         # height = 2.40
@@ -407,10 +150,6 @@ class LidarFaultInjector(FaultInjector):
 
         z_offset = box.get('z_offset', 0.0)
 
-        # length = 5.5  # 4.484
-        # width = 2.5    # 1.81
-        # height = 4.00
-
         x, y, z = points[:, 0], points[:, 1], points[:, 2]
         mask = (
             (np.abs(x) > length / 2) |
@@ -418,3 +157,41 @@ class LidarFaultInjector(FaultInjector):
             (np.abs(z - z_offset) > height / 2)
         )
         return points[mask]
+
+    def _apply_percentage_distance_bias(self, sensor_data, fault):
+        """
+        Add a percentage bias to the distance of each LiDAR point from the origin.
+        For example, a 10% bias moves a point at 10m to 11m.
+        """
+        try:
+            self.logger.info("Applying percentage distance bias to LiDAR points.")
+
+            points = np.asarray(sensor_data['points'], dtype=np.float32)
+            if points.size == 0:
+                return sensor_data
+
+            # Optionally filter ego vehicle points
+            filter_ego = fault.get('parameters', {}).get('filter_ego_vehicle', True)
+            if filter_ego:
+                points = self.filter_ego_vehicle_points(points, fault)
+
+            bias_percent = fault.get('parameters', {}).get('bias_percent', 0.0)
+            scale = 1.0 + (bias_percent / 100.0)
+
+            xyz = points[:, :3]
+            norms = np.linalg.norm(xyz, axis=1, keepdims=True)
+            # Mask for points not at the origin
+            mask = (norms[:, 0] != 0)
+            directions = np.zeros_like(xyz)
+            directions[mask] = xyz[mask] / norms[mask]
+
+            # Only move points not at the origin
+            xyz[mask] = directions[mask] * (norms[mask] * scale)
+
+            points[:, :3] = xyz
+            sensor_data['points'] = points
+            self.logger.info("Applied percentage distance bias (%.2f%%) to %d points.", bias_percent, mask.sum())
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying percentage distance bias: {e}")
+            return sensor_data
