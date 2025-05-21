@@ -24,7 +24,7 @@ class LidarFaultInjector(FaultInjector):
                 elif fault['name'] == 'zero_value':
                     sensor_data = self._apply_zero_value(sensor_data, fault)
                 elif fault['name'] == 'percentage_bias':
-                    sensor_data = self._apply_percentage_bias(sensor_data, fault)
+                    sensor_data = self._apply_distance_bias(sensor_data, fault)
                 # Add more Lidar-specific fault types as needed
             
             # Log sensor data after applying faults
@@ -189,7 +189,7 @@ class LidarFaultInjector(FaultInjector):
             # Only add 10 meters to points not at the origin
             add_mask = (norms != 0)
             new_xyz = np.copy(xyz)
-            new_xyz[add_mask[:, 0]] += directions[add_mask[:, 0]] + 10.0
+            new_xyz[add_mask[:, 0]] += directions[add_mask[:, 0]] + 3.0
 
             # Recombine all columns with correct types
             if ring is not None:
@@ -314,3 +314,31 @@ class LidarFaultInjector(FaultInjector):
             self.logger.error(f"Error applying fixed bias: {e}")
             return sensor_data
 
+    def _apply_distance_bias(self, sensor_data, fault):
+        """
+        Add a fixed distance (e.g., 10 meters) outward from the origin to each LiDAR point.
+        """
+        try:
+            self.logger.info("Applying distance bias to LiDAR points.")
+
+            points = np.asarray(sensor_data['points'], dtype=np.float32)
+            if points.size == 0:
+                return sensor_data
+
+            bias_distance = fault.get('parameters', {}).get('bias_distance', 10.0)
+
+            xyz = points[:, :3]
+            norms = np.linalg.norm(xyz, axis=1, keepdims=True)
+            # Avoid division by zero
+            directions = np.divide(xyz, norms, out=np.zeros_like(xyz), where=norms != 0)
+            # Only apply to points not at the origin
+            mask = (norms[:, 0] != 0)
+            xyz[mask] = xyz[mask] + directions[mask] * bias_distance
+
+            points[:, :3] = xyz
+            sensor_data['points'] = points
+            self.logger.info("Applied distance bias to %d points.", mask.sum())
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying distance bias: {e}")
+            return sensor_data
