@@ -397,9 +397,9 @@ class LidarFaultInjector(FaultInjector):
         # width = 1.45 + 0.18 + 0.18    # 1.81
         # height = 2.40
 
-        length = 4.6  # 4.484
-        width = 1.9    # 1.81
-        height = 2.80
+        length = 5.0  # 4.484
+        width = 2.0    # 1.81
+        height = 3.00
 
         x, y, z = points[:, 0], points[:, 1], points[:, 2]
         mask = (
