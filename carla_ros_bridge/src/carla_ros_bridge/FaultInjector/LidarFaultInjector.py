@@ -325,7 +325,7 @@ class LidarFaultInjector(FaultInjector):
             if points.size == 0:
                 return sensor_data
 
-            bias_distance = fault.get('parameters', {}).get('bias_distance', 10.0)
+            bias_distance = 2.0
 
             xyz = points[:, :3]
             norms = np.linalg.norm(xyz, axis=1, keepdims=True)
