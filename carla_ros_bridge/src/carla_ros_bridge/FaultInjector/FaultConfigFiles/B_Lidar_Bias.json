@@ -16,7 +16,8 @@
                     "vehicle_box": {
                         "length": 6.5,
                         "width": 3.5,
-                        "height": 4.5
+                        "height": 4.5,
+                        "z_offset": 1.0
                     }
                 },
                 "duration": 45

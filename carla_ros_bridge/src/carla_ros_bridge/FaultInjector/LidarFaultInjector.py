@@ -392,15 +392,17 @@ class LidarFaultInjector(FaultInjector):
         """
         Remove points inside the ego vehicle bounding box using vehicle parameters.
         """
-        # Vehicle dimensions from config
+        # Vehicle dimensions gotten from config
         # length = 2.544 + 1.12 + 0.82  # 4.484
         # width = 1.45 + 0.18 + 0.18    # 1.81
         # height = 2.40
-        # Get vehicle box from fault parameters, or use defaults
+        # Get vehicle box from fault parametsers, or use defaults
         box = fault.get('parameters', {}).get('vehicle_box', {})
         length = box.get('length', 4.484)
         width = box.get('width', 1.81)
         height = box.get('height', 2.40)
+
+        z_offset = box.get('z_offset', 0.0)
 
         length = 5.5  # 4.484
         width = 2.5    # 1.81
@@ -410,6 +412,6 @@ class LidarFaultInjector(FaultInjector):
         mask = (
             (np.abs(x) > length / 2) |
             (np.abs(y) > width / 2) |
-            (np.abs(z) > height / 2)
+            (np.abs(z - z_offset) > height / 2)
         )
         return points[mask]
