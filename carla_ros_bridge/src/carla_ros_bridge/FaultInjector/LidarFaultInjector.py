@@ -407,9 +407,9 @@ class LidarFaultInjector(FaultInjector):
 
         z_offset = box.get('z_offset', 0.0)
 
-        length = 5.5  # 4.484
-        width = 2.5    # 1.81
-        height = 4.00
+        # length = 5.5  # 4.484
+        # width = 2.5    # 1.81
+        # height = 4.00
 
         x, y, z = points[:, 0], points[:, 1], points[:, 2]
         mask = (
