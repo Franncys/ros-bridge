@@ -12,9 +12,9 @@
                     }
                 },
                 "parameters": {
-                    "bias_percent": 0.5
+                    "bias_percent": 1.0
                 },
-                "duration": 30
+                "duration": 45
             }
         ]
     }
