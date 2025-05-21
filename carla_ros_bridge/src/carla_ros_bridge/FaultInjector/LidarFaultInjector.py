@@ -354,7 +354,8 @@ class LidarFaultInjector(FaultInjector):
             points = np.asarray(sensor_data['points'], dtype=np.float32)
             if points.size == 0:
                 return sensor_data
-
+            
+            points = self.filter_nearby_points(points, min_radius=1.5)
             bias_distance = fault.get('parameters', {}).get('bias_distance', 2.0)
 
             xyz = points[:, :3]
@@ -374,3 +375,14 @@ class LidarFaultInjector(FaultInjector):
         except Exception as e:
             self.logger.error(f"Error applying distance bias: {e}")
             return sensor_data
+        
+    def filter_nearby_points(self, points, min_radius=1.5):
+        """
+        Remove points within min_radius of the origin (0,0,0).
+        points: np.ndarray of shape (N, 4) or (N, 5)
+        Returns: filtered points (same shape)
+        """
+        xyz = points[:, :3]
+        dists = np.linalg.norm(xyz, axis=1)
+        mask = dists > min_radius
+        return points[mask]
