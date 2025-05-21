@@ -393,9 +393,13 @@ class LidarFaultInjector(FaultInjector):
         Remove points inside the ego vehicle bounding box using vehicle parameters.
         """
         # Vehicle dimensions from config
-        length = 2.544 + 1.12 + 0.82  # 4.484
-        width = 1.45 + 0.18 + 0.18    # 1.81
-        height = 2.40
+        # length = 2.544 + 1.12 + 0.82  # 4.484
+        # width = 1.45 + 0.18 + 0.18    # 1.81
+        # height = 2.40
+
+        length = 4.6  # 4.484
+        width = 1.9    # 1.81
+        height = 2.80
 
         x, y, z = points[:, 0], points[:, 1], points[:, 2]
         mask = (
