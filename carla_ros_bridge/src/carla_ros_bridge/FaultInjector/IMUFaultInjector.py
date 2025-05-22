@@ -67,6 +67,8 @@ class IMUFaultInjector(FaultInjector):
             self.logger.error(f"Error applying noise to IMU data: {e}")
             return sensor_data
 
+
+
     def _apply_rotation(self, sensor_data, fault):
         """
         Simulate a rotation by modifying the orientation quaternion based on the fault parameters.
@@ -174,4 +176,140 @@ class IMUFaultInjector(FaultInjector):
             return sensor_data
         except Exception as e:
             self.logger.error(f"Error applying velocity reduction: {e}")
+            return sensor_data
+        
+    def _apply_orientation_noise(self, sensor_data, fault):
+        """
+        Add random noise to the IMU orientation quaternion.
+        """
+        try:
+            noise_stddev = fault.get('parameters', {}).get('noise_stddev', 0.01)  # radians
+            # Generate small random rotation angles
+            noise_angles = np.random.normal(0, noise_stddev, 3)
+            noise_rot = euler2mat(*noise_angles, axes='sxyz')
+            # Convert current quaternion to rotation matrix
+            current_quat = [
+                sensor_data.orientation.w,
+                sensor_data.orientation.x,
+                sensor_data.orientation.y,
+                sensor_data.orientation.z,
+            ]
+            current_rot = quat2mat(current_quat)
+            # Apply noise
+            new_rot = current_rot @ noise_rot
+            new_quat = mat2quat(new_rot)
+            # Update orientation
+            sensor_data.orientation.w = new_quat[0]
+            sensor_data.orientation.x = new_quat[1]
+            sensor_data.orientation.y = new_quat[2]
+            sensor_data.orientation.z = new_quat[3]
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying orientation noise: {e}")
+            return sensor_data
+
+    def _apply_orientation_bias(self, sensor_data, fault):
+        """
+        Add a fixed bias (rotation) to the IMU orientation quaternion.
+        """
+        try:
+            axis = fault.get('parameters', {}).get('axis', 'z')
+            angle_degrees = fault.get('parameters', {}).get('angle', 5.0)
+            angle_radians = math.radians(angle_degrees)
+            if axis == 'x':
+                bias_rot = euler2mat(angle_radians, 0.0, 0.0, axes='sxyz')
+            elif axis == 'y':
+                bias_rot = euler2mat(0.0, angle_radians, 0.0, axes='sxyz')
+            elif axis == 'z':
+                bias_rot = euler2mat(0.0, 0.0, angle_radians, axes='sxyz')
+            else:
+                raise ValueError("Invalid axis for orientation bias")
+            current_quat = [
+                sensor_data.orientation.w,
+                sensor_data.orientation.x,
+                sensor_data.orientation.y,
+                sensor_data.orientation.z,
+            ]
+            current_rot = quat2mat(current_quat)
+            new_rot = current_rot @ bias_rot
+            new_quat = mat2quat(new_rot)
+            sensor_data.orientation.w = new_quat[0]
+            sensor_data.orientation.x = new_quat[1]
+            sensor_data.orientation.y = new_quat[2]
+            sensor_data.orientation.z = new_quat[3]
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying orientation bias: {e}")
+            return sensor_data
+
+    def _apply_gyroscope_noise(self, sensor_data, fault):
+        """
+        Add Gaussian noise to IMU gyroscope (angular velocity).
+        """
+        try:
+            noise_stddev = fault.get('parameters', {}).get('noise_stddev', {
+                "x": 0.01,
+                "y": 0.01,
+                "z": 0.01
+            })
+            sensor_data.angular_velocity.x += np.random.normal(0, noise_stddev.get("x", 0.01))
+            sensor_data.angular_velocity.y += np.random.normal(0, noise_stddev.get("y", 0.01))
+            sensor_data.angular_velocity.z += np.random.normal(0, noise_stddev.get("z", 0.01))
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying gyroscope noise: {e}")
+            return sensor_data
+
+    def _apply_accelerometer_noise(self, sensor_data, fault):
+        """
+        Add Gaussian noise to IMU accelerometer (linear acceleration).
+        """
+        try:
+            noise_stddev = fault.get('parameters', {}).get('noise_stddev', {
+                "x": 0.01,
+                "y": 0.01,
+                "z": 0.01
+            })
+            sensor_data.linear_acceleration.x += np.random.normal(0, noise_stddev.get("x", 0.01))
+            sensor_data.linear_acceleration.y += np.random.normal(0, noise_stddev.get("y", 0.01))
+            sensor_data.linear_acceleration.z += np.random.normal(0, noise_stddev.get("z", 0.01))
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying accelerometer noise: {e}")
+            return sensor_data
+
+    def _apply_gyroscope_bias(self, sensor_data, fault):
+        """
+        Add constant bias to IMU gyroscope (angular velocity).
+        """
+        try:
+            bias = fault.get('parameters', {}).get('bias', {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            })
+            sensor_data.angular_velocity.x += bias.get("x", 0.0)
+            sensor_data.angular_velocity.y += bias.get("y", 0.0)
+            sensor_data.angular_velocity.z += bias.get("z", 0.0)
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying gyroscope bias: {e}")
+            return sensor_data
+
+    def _apply_accelerometer_bias(self, sensor_data, fault):
+        """
+        Add constant bias to IMU accelerometer (linear acceleration).
+        """
+        try:
+            bias = fault.get('parameters', {}).get('bias', {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            })
+            sensor_data.linear_acceleration.x += bias.get("x", 0.0)
+            sensor_data.linear_acceleration.y += bias.get("y", 0.0)
+            sensor_data.linear_acceleration.z += bias.get("z", 0.0)
+            return sensor_data
+        except Exception as e:
+            self.logger.error(f"Error applying accelerometer bias: {e}")
             return sensor_data
