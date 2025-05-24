@@ -1,0 +1,13 @@
+[
+    {
+        "sensor": "LidarSensor",
+        "faults": [
+            {
+                "name": "percentage_bias",
+                "trigger": {"location": {"x": -21.0, "y": 66.0, "z": 2.0}},
+                "parameters": {"bias_percent": 1.0, "filter_ego_vehicle": true, "vehicle_box": {"length": 6.5, "width": 3.5, "height": 4.5, "z_offset": 1.0}},
+                "duration": 45
+            }
+        ]
+    }
+]

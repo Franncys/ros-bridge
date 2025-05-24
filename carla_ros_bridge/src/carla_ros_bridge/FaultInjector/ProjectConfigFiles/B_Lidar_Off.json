@@ -1,0 +1,13 @@
+[
+    {
+        "sensor": "LidarSensor",
+        "faults": [
+            {
+                "name": "zero_value",
+                "trigger": {"location": {"x": -21.0, "y": 66.0, "z": 2.0}},
+                "parameters": {},
+                "duration": 10
+            }
+        ]
+    }
+]

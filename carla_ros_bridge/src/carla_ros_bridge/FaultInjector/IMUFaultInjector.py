@@ -31,7 +31,19 @@ class IMUFaultInjector(FaultInjector):
                     sensor_data = self._apply_zero_value(sensor_data, fault)
                 elif fault['name'] == 'velocity_reduction':
                     sensor_data = self._apply_velocity_reduction(sensor_data, fault)
-            
+                elif fault['name'] == 'orientation_noise':
+                    sensor_data = self._apply_orientation_noise(sensor_data, fault)
+                elif fault['name'] == 'orientation_bias':
+                    sensor_data = self._apply_orientation_bias(sensor_data, fault)
+                elif fault['name'] == 'gyroscope_noise':
+                    sensor_data = self._apply_gyroscope_noise(sensor_data, fault)
+                elif fault['name'] == 'accelerometer_noise':
+                    sensor_data = self._apply_accelerometer_noise(sensor_data, fault)
+                elif fault['name'] == 'gyroscope_bias':
+                    sensor_data = self._apply_gyroscope_bias(sensor_data, fault)
+                elif fault['name'] == 'accelerometer_bias':
+                    sensor_data = self._apply_accelerometer_bias(sensor_data, fault)
+
                 # Log sensor data after applying faults
                 self.logger.info("IMU Sensor data after applying faults: %s", sensor_data)
                 return sensor_data    
