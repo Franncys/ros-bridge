@@ -44,6 +44,16 @@ class LidarFaultInjector(FaultInjector):
                 raise ValueError("Sensor data is missing point cloud information or is not a NumPy array.")
             noise_level = fault.get('parameters', {}).get('noise_level', 0.1)
             point_cloud = np.array(sensor_data['points'])  # Assuming sensor_data['points'] is a numpy array
+            
+            if point_cloud.size == 0:
+                return sensor_data
+
+            # Optionally filter ego vehicle points
+            filter_ego = fault.get('parameters', {}).get('filter_ego_vehicle', True)
+            if filter_ego:
+                point_cloud = self.filter_ego_vehicle_points(point_cloud, fault)
+
+            
             noise = np.random.normal(0, noise_level, point_cloud.shape)
             noisy_points = point_cloud + noise
             # Ensure correct types: x, y, z, intensity = float32; ring = uint16
