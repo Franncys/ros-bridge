@@ -108,9 +108,16 @@ class FaultInjector(ABC):
         :param timestamp: The current timestamp.
         """
         before_count = len(self.active_faults)
+        # self.active_faults = [
+        #     active_fault for active_fault in self.active_faults
+        #     if timestamp - active_fault["activation_time"] < active_fault["fault"].get("duration", float("inf"))
+        # ]
         self.active_faults = [
             active_fault for active_fault in self.active_faults
-            if timestamp - active_fault["activation_time"] < active_fault["fault"].get("duration", float("inf"))
+            if (
+                active_fault["fault"].get("duration", float("inf")) == 0 or
+                timestamp - active_fault["activation_time"] < active_fault["fault"].get("duration", float("inf"))
+            )
         ]
         expired_count = before_count - len(self.active_faults)
         if expired_count > 0:
