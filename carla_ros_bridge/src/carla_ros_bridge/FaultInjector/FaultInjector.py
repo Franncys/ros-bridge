@@ -202,5 +202,9 @@ class FaultInjector(ABC):
         # TO CHANGE FOR THE MOMENT THE FILE IS HARDCODED
         new_file = '/tum/src/carla/ros-bridge/carla_ros_bridge/src/carla_ros_bridge/FaultInjector/ProjectConfigFiles/' + new_file
         
+        self.faults = []
+        self.active_faults = []
+        self.skip_message = False
+        
         print("Reloading faults from file: ", new_file)
         self._load_faults(new_file)
