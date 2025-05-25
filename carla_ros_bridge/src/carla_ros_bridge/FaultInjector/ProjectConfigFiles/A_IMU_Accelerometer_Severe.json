@@ -3,10 +3,10 @@
         "sensor": "IMUSensor",
         "faults": [
             {
-                "name": "dropout",
+                "name": "noise",
                 "trigger": {"location": {"x": 70.8, "y": 66.5, "z": 2.0}},
-                "parameters": {},
-                "duration": 45
+                "parameters": {"noise_stddev": {"x": 0.2, "y": 0.2, "z": 0.2}},
+                "duration": 10
             }
         ]
     }

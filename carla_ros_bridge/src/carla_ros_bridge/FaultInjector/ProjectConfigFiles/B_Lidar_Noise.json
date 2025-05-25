@@ -6,7 +6,7 @@
                 "name": "noise",
                 "trigger": {"location": {"x": -21.0, "y": 66.0, "z": 2.0}},
                 "parameters": {"noise_level": 0.1},
-                "duration": 10
+                "duration": 0
             }
         ]
     }

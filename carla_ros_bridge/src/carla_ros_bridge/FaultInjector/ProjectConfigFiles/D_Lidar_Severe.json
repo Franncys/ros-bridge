@@ -3,10 +3,10 @@
         "sensor": "LidarSensor",
         "faults": [
             {
-                "name": "dropout",
+                "name": "noise",
                 "trigger": {"location": {"x": -41.6, "y": 26.0, "z": 2.0}},
-                "parameters": {},
-                "duration": 45
+                "parameters": {"noise_level": 0.2},
+                "duration": 0
             }
         ]
     }

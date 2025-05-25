@@ -3,10 +3,10 @@
         "sensor": "LidarSensor",
         "faults": [
             {
-                "name": "zero_value",
+                "name": "dropout",
                 "trigger": {"location": {"x": -41.6, "y": 50.0, "z": 2.0}},
                 "parameters": {},
-                "duration": 10
+                "duration": 0
             }
         ]
     }

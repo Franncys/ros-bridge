@@ -3,10 +3,10 @@
         "sensor": "GNSSSensor",
         "faults": [
             {
-                "name": "zero_value",
+                "name": "dropout",
                 "trigger": {"location": {"x": -21.0, "y": 66.0, "z": 2.0}},
                 "parameters": {},
-                "duration": 10
+                "duration": 0
             }
         ]
     }
