@@ -1,5 +1,6 @@
 [
     {
+        "sensor": "IMUSensor",
         "faults": [
             {
                 "name": "noise",
