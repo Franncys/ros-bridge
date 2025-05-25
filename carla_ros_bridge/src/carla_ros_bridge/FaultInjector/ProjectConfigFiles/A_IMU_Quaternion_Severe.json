@@ -5,7 +5,7 @@
             {
                 "name": "orientation_noise",
                 "trigger": {"location": {"x": 70.8, "y": 66.5, "z": 2.0}},
-                "parameters": {"noise_stddev": {"x": 0.2, "y": 0.2, "z": 0.2}},
+                "parameters": {"noise_stddev": 0.2},
                 "duration": 0
             }
         ]
