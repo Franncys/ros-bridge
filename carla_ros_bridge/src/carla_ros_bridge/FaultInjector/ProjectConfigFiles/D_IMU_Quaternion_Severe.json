@@ -3,7 +3,7 @@
         "sensor": "IMUSensor",
         "faults": [
             {
-                "name": "noise",
+                "name": "orientation_noise",
                 "trigger": {"location": {"x": -41.6, "y": 26.0, "z": 2.0}},
                 "parameters": {"noise_stddev": {"x": 0.2, "y": 0.2, "z": 0.2}},
                 "duration": 0

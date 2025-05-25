@@ -3,7 +3,7 @@
         "sensor": "IMUSensor",
         "faults": [
             {
-                "name": "noise",
+                "name": "accelerometer_noise",
                 "trigger": {"location": {"x": -41.6, "y": 50.0, "z": 2.0}},
                 "parameters": {"noise_stddev": {"x": 0.02, "y": 0.02, "z": 0.02}},
                 "duration": 0
