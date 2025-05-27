@@ -3,6 +3,7 @@
         "sensor": "GNSSSensor",
         "faults": [
             {
+                "name": "noise",
                 "trigger": {"location": {"x": -41.6, "y": 50.0, "z": 2.0}},
                 "parameters": {"noise_stddev": {"latitude": 0.0002, "longitude": 0.0002, "altitude": 2.0}},
                 "duration": 0
